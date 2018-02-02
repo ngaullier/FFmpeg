@@ -41,6 +41,7 @@ typedef struct SilenceDetectContext {
     int independant_channels;   ///< number of entries in following arrays (always 1 in mono mode)
     int64_t *nb_null_samples;   ///< (array) current number of continuous zero samples
     int64_t *start;             ///< (array) if silence is detected, this value contains the time of the first zero sample (default/unset = INT64_MIN)
+    int64_t frame_end;          ///< pts of the end of the current frame (used to compute duration of silence at EOS)
     int last_sample_rate;       ///< last sample rate to check for sample rate changes
     AVRational time_base;       ///< time_base
 
@@ -90,10 +91,12 @@ static av_always_inline void update(SilenceDetectContext *s, AVFrame *insamples,
         }
     } else {
         if (s->start[channel] > INT64_MIN) {
-            int64_t end_pts = insamples->pts;
+            int64_t end_pts = insamples ? insamples->pts : s->frame_end;
             int64_t duration_ts = end_pts - s->start[channel];
-            set_meta(insamples, s->mono ? channel + 1 : 0, "silence_end", av_ts2timestr(end_pts, &s->time_base));
-            set_meta(insamples, s->mono ? channel + 1 : 0, "silence_duration", av_ts2timestr(duration_ts, &s->time_base));
+            if (insamples) {
+                set_meta(insamples, s->mono ? channel + 1 : 0, "silence_end", av_ts2timestr(end_pts, &s->time_base));
+                set_meta(insamples, s->mono ? channel + 1 : 0, "silence_duration", av_ts2timestr(duration_ts, &s->time_base));
+            }
             if (s->mono)
                 av_log(s, AV_LOG_INFO, "channel: %d | ", channel);
             av_log(s, AV_LOG_INFO, "silence_end: %s | silence_duration: %s\n",
@@ -172,6 +175,7 @@ static int filter_frame(AVFilterLink *inlink, AVFrame *insamples)
         }
     s->last_sample_rate = srate;
     s->time_base = inlink->time_base;
+    s->frame_end = insamples->pts + (int64_t)((double)insamples->nb_samples / srate / av_q2d(s->time_base) + .5);
 
     // TODO: document metadata
     s->silencedetect(s, insamples, nb_samples, nb_samples_notify);
@@ -215,7 +219,11 @@ static int query_formats(AVFilterContext *ctx)
 static av_cold void uninit(AVFilterContext *ctx)
 {
     SilenceDetectContext *s = ctx->priv;
+    int c;
 
+    for (c = 0; c < s->independant_channels; c++)
+        if (s->start[c] > INT64_MIN)
+            update(s, NULL, 0, c, 0);
     av_freep(&s->nb_null_samples);
     av_freep(&s->start);
 }
