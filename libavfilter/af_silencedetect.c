@@ -40,7 +40,7 @@ typedef struct SilenceDetectContext {
     int channels;               ///< number of channels
     int independant_channels;   ///< number of entries in following arrays (always 1 in mono mode)
     int64_t *nb_null_samples;   ///< (array) current number of continuous zero samples
-    int64_t *start;             ///< (array) if silence is detected, this value contains the time of the first zero sample
+    int64_t *start;             ///< (array) if silence is detected, this value contains the time of the first zero sample (default/unset = INT64_MIN)
     int last_sample_rate;       ///< last sample rate to check for sample rate changes
     AVRational time_base;       ///< time_base
 
@@ -77,7 +77,7 @@ static av_always_inline void update(SilenceDetectContext *s, AVFrame *insamples,
 {
     int channel = current_sample % s->independant_channels;
     if (is_silence) {
-        if (!s->start[channel]) {
+        if (s->start[channel] == INT64_MIN) {
             s->nb_null_samples[channel]++;
             if (s->nb_null_samples[channel] >= nb_samples_notify) {
                 s->start[channel] = insamples->pts + (int64_t)(((double)current_sample / (s->last_sample_rate * s->channels) - s->duration) / av_q2d(s->time_base) + .5);
@@ -89,7 +89,7 @@ static av_always_inline void update(SilenceDetectContext *s, AVFrame *insamples,
             }
         }
     } else {
-        if (s->start[channel]) {
+        if (s->start[channel] > INT64_MIN) {
             int64_t end_pts = insamples->pts;
             int64_t duration_ts = end_pts - s->start[channel];
             set_meta(insamples, s->mono ? channel + 1 : 0, "silence_end", av_ts2timestr(end_pts, &s->time_base));
@@ -100,7 +100,8 @@ static av_always_inline void update(SilenceDetectContext *s, AVFrame *insamples,
                     av_ts2timestr(end_pts, &s->time_base),
                     av_ts2timestr(duration_ts, &s->time_base));
         }
-        s->nb_null_samples[channel] = s->start[channel] = 0;
+        s->nb_null_samples[channel] = 0;
+        s->start[channel] = INT64_MIN;
     }
 }
 
@@ -126,15 +127,18 @@ static int config_input(AVFilterLink *inlink)
 {
     AVFilterContext *ctx = inlink->dst;
     SilenceDetectContext *s = ctx->priv;
+    int c;
 
     s->channels = inlink->channels;
     s->independant_channels = s->mono ? s->channels : 1;
     s->nb_null_samples = av_mallocz_array(sizeof(*s->nb_null_samples), s->independant_channels);
     if (!s->nb_null_samples)
         return AVERROR(ENOMEM);
-    s->start = av_mallocz_array(sizeof(*s->start), s->independant_channels);
+    s->start = av_malloc_array(sizeof(*s->start), s->independant_channels);
     if (!s->start)
         return AVERROR(ENOMEM);
+    for (c = 0; c < s->independant_channels; c++)
+        s->start[c] = INT64_MIN;
 
     switch (inlink->format) {
     case AV_SAMPLE_FMT_DBL: s->silencedetect = silencedetect_dbl; break;
