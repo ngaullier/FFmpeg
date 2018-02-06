@@ -175,7 +175,7 @@ static int filter_frame(AVFilterLink *inlink, AVFrame *insamples)
         }
     s->last_sample_rate = srate;
     s->time_base = inlink->time_base;
-    s->frame_end = insamples->pts + (int64_t)((double)insamples->nb_samples / srate / av_q2d(s->time_base) + .5);
+    s->frame_end = insamples->pts + av_rescale_q(insamples->nb_samples, (AVRational){ 1, s->last_sample_rate }, s->time_base);
 
     // TODO: document metadata
     s->silencedetect(s, insamples, nb_samples, nb_samples_notify);
