@@ -84,6 +84,13 @@ runecho(){
     $target_exec $target_path/"$@" >&3
 }
 
+# $1=regex $2-$n=command
+# catch av_log messages
+runlogs(){
+    test "${V:-0}" -gt 0 && echo "$target_exec" $target_path/"${@:2}" "2>&1|awk -F' '" "'/${@:1:1}/{ for(i=4; i<=NF; ++i) printf \$i FS; print \"\"}'" >&3
+    $target_exec $target_path/"${@:2}" 2>&1|awk -F' ' "/${@:1:1}/{ for(i=4; i<=NF; ++i) printf \$i FS; print \"\"}"
+}
+
 probefmt(){
     run ffprobe${PROGSUF} -show_entries format=format_name -print_format default=nw=1:nk=1 -v 0 "$@"
 }
