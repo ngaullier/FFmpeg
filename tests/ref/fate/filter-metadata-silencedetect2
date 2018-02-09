@@ -1,4 +1,4 @@
 channel: 3 | silence_start: 0 
-channel: 2 | silence_start: 1.35558 
-channel: 2 | silence_end: 1.984 | silence_duration: 0.628417 
+channel: 2 | silence_start: 1.52054 
+channel: 2 | silence_end: 1.90594 | silence_duration: 0.385396 
 channel: 3 | silence_end: 1.984 | silence_duration: 1.984 
