@@ -91,7 +91,7 @@ static av_always_inline void update(SilenceDetectContext *s, AVFrame *insamples,
         }
     } else {
         if (s->start[channel] > INT64_MIN) {
-            int64_t end_pts = insamples ? insamples->pts : s->frame_end;
+            int64_t end_pts = insamples ? insamples->pts + av_rescale_q(current_sample / s->independant_channels, (AVRational){ 1, s->last_sample_rate }, s->time_base) : s->frame_end;
             int64_t duration_ts = end_pts - s->start[channel];
             if (insamples) {
                 set_meta(insamples, s->mono ? channel + 1 : 0, "silence_end", av_ts2timestr(end_pts, &s->time_base));
