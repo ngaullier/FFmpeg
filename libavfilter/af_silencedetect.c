@@ -46,7 +46,7 @@ typedef struct SilenceDetectContext {
     AVRational time_base;       ///< time_base
 
     void (*silencedetect)(struct SilenceDetectContext *s, AVFrame *insamples,
-                          int nb_samples, int64_t nb_samples_notify);
+                          int64_t nb_samples_notify);
 } SilenceDetectContext;
 
 #define OFFSET(x) offsetof(SilenceDetectContext, x)
@@ -110,13 +110,13 @@ static av_always_inline void update(SilenceDetectContext *s, AVFrame *insamples,
 
 #define SILENCE_DETECT(name, type)                                               \
 static void silencedetect_##name(SilenceDetectContext *s, AVFrame *insamples,    \
-                                 int nb_samples, int64_t nb_samples_notify)      \
+                                 int64_t nb_samples_notify)                      \
 {                                                                                \
     const type *p = (const type *)insamples->data[0];                            \
     const type noise = s->noise;                                                 \
     int i;                                                                       \
                                                                                  \
-    for (i = 0; i < nb_samples; i++, p++)                                        \
+    for (i = 0; i < insamples->nb_samples * s->channels; i++, p++)               \
         update(s, insamples, *p < noise && *p > -noise, i,                       \
                nb_samples_notify);                                               \
 }
@@ -162,10 +162,8 @@ static int config_input(AVFilterLink *inlink)
 static int filter_frame(AVFilterLink *inlink, AVFrame *insamples)
 {
     SilenceDetectContext *s         = inlink->dst->priv;
-    const int nb_channels           = inlink->channels;
     const int srate                 = inlink->sample_rate;
-    const int nb_samples            = insamples->nb_samples     * nb_channels;
-    const int64_t nb_samples_notify = srate * s->duration * (s->mono ? 1 : nb_channels);
+    const int64_t nb_samples_notify = srate * s->duration * (s->mono ? 1 : s->channels);
     int c;
 
     // scale number of null samples to the new sample rate
@@ -178,7 +176,7 @@ static int filter_frame(AVFilterLink *inlink, AVFrame *insamples)
     s->frame_end = insamples->pts + av_rescale_q(insamples->nb_samples, (AVRational){ 1, s->last_sample_rate }, s->time_base);
 
     // TODO: document metadata
-    s->silencedetect(s, insamples, nb_samples, nb_samples_notify);
+    s->silencedetect(s, insamples, nb_samples_notify);
 
     return ff_filter_frame(inlink->dst->outputs[0], insamples);
 }
