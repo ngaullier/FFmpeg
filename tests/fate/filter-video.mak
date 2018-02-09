@@ -720,11 +720,11 @@ fate-filter-metadata-cropdetect: CMD = run $(FILTER_METADATA_COMMAND) "sws_flags
 SILENCEDETECT_DEPS = FFPROBE AVDEVICE LAVFI_INDEV AMOVIE_FILTER AMR_DEMUXER AMRWB_DECODER SILENCEDETECT_FILTER
 FATE_METADATA_FILTER-$(call ALLYES, $(SILENCEDETECT_DEPS)) += fate-filter-metadata-silencedetect
 fate-filter-metadata-silencedetect: SRC = $(TARGET_SAMPLES)/amrwb/seed-12k65.awb
-fate-filter-metadata-silencedetect: CMD = run $(FILTER_METADATA_COMMAND) "amovie='$(SRC)',silencedetect=n=-30dB:d=.4"
+fate-filter-metadata-silencedetect: CMD = run $(FILTER_METADATA_COMMAND) "amovie='$(SRC)',silencedetect=n=-42dB:d=.3"
 
 FATE_METADATA_FILTER-$(call ALLYES, $(SILENCEDETECT_DEPS)) += fate-filter-metadata-silencedetect2
 fate-filter-metadata-silencedetect2: SRC = $(TARGET_SAMPLES)/ac3/millers_crossing_4.0.ac3
-fate-filter-metadata-silencedetect2: CMD = runlogs "\[silencedetect.*\].*silence_(start|end)" $(FILTER_METADATA_COMMAND) "amovie='$(SRC)',silencedetect=n=-30dB:d=.4:mono=1"
+fate-filter-metadata-silencedetect2: CMD = rungetavlogs "\[silencedetect.*\].*silence_(start|end)" $(FILTER_METADATA_COMMAND) "amovie='$(SRC)',silencedetect=n=0.02:d=.15:mono=1"
 
 EBUR128_METADATA_DEPS = FFPROBE AVDEVICE LAVFI_INDEV AMOVIE_FILTER FLAC_DEMUXER FLAC_DECODER EBUR128_FILTER
 FATE_METADATA_FILTER-$(call ALLYES, $(EBUR128_METADATA_DEPS)) += fate-filter-metadata-ebur128
