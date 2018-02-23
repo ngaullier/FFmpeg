@@ -25,6 +25,7 @@
  */
 
 #include "config.h"
+#include "../libavcodec/avcodec.h"
 
 #if HAVE_UNISTD_H
 #include <unistd.h>
@@ -311,8 +312,14 @@ static void format_line(void *avcl, int level, const char *fmt, va_list vl,
                 if(type) type[0] = get_category(parent);
             }
         }
-        av_bprintf(part+1, "[%s @ %p] ",
-                 avc->item_name(avcl), avcl);
+        if (avc->category == AV_CLASS_CATEGORY_ENCODER) {
+            AVCodecContext *enc = avcl;
+            av_bprintf(part+1, "[%s @ framenumber=%"PRId64"] ",
+                     avc->item_name(avcl), (enc->frame_num));
+        } else {
+            av_bprintf(part+1, "[%s @ %p] ",
+                     avc->item_name(avcl), avcl);
+        }
         if(type) type[1] = get_category(avcl);
     }
 
