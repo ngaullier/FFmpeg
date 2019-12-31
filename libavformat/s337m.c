@@ -22,6 +22,7 @@
 #include "avformat.h"
 #include "internal.h"
 #include "spdif.h"
+#include "s337m.h"
 
 #define MARKER_16LE         0x72F81F4E
 #define MARKER_20LE         0x20876FF0E154
@@ -142,17 +143,20 @@ static void bswap_buf24(uint8_t *data, int size)
         FFSWAP(uint8_t, data[0], data[2]);
 }
 
-static int s337m_read_packet(AVFormatContext *s, AVPacket *pkt)
+int ff_s337m_get_packet(AVIOContext *pb, AVPacket *pkt, int size, enum AVCodecID *codec, void *avc)
 {
-    AVIOContext *pb = s->pb;
     uint64_t state = 0;
     int ret, data_type, data_size, offset;
-    enum AVCodecID codec;
+    int64_t orig_pos = avio_tell(pb);
 
     while (!IS_LE_MARKER(state)) {
         state = (state << 8) | avio_r8(pb);
         if (avio_feof(pb))
             return AVERROR_EOF;
+        if (avio_tell(pb) - orig_pos + 6 >= size) {
+            av_log(avc, AV_LOG_ERROR, "s337m : sync bytes not found at packet pos=0x%"PRIx64" size=%d\n", orig_pos, size);
+            return AVERROR_INVALIDDATA;
+        }
     }
 
     if (IS_16LE_MARKER(state)) {
@@ -163,8 +167,9 @@ static int s337m_read_packet(AVFormatContext *s, AVPacket *pkt)
         data_size = avio_rl24(pb);
     }
 
-    if ((ret = s337m_get_offset_and_codec(s, state, data_type, data_size, &offset, &codec)) < 0)
+    if ((ret = s337m_get_offset_and_codec(avc, state, data_type, data_size, &offset, codec)) < 0)
         return ret;
+    offset = FFMIN(offset, size - (avio_tell(pb) - orig_pos));
 
     if ((ret = av_get_packet(pb, pkt, offset)) != offset)
         return ret < 0 ? ret : AVERROR_EOF;
@@ -173,6 +178,17 @@ static int s337m_read_packet(AVFormatContext *s, AVPacket *pkt)
         ff_spdif_bswap_buf16((uint16_t *)pkt->data, (uint16_t *)pkt->data, pkt->size >> 1);
     else
         bswap_buf24(pkt->data, pkt->size);
+
+    return 0;
+}
+
+static int s337m_read_packet(AVFormatContext *s, AVPacket *pkt)
+{
+    enum AVCodecID codec;
+    int ret;
+
+    if ((ret = ff_s337m_get_packet(s->pb, pkt, avio_size(s->pb), &codec, s)) < 0)
+        return ret;
 
     if (!s->nb_streams) {
         AVStream *st = avformat_new_stream(s, NULL);
