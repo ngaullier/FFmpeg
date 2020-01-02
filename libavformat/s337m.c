@@ -35,7 +35,7 @@
 
 static int s337m_get_offset_and_codec(void *avc,
                                       uint64_t state,
-                                      int data_type, int data_size,
+                                      int data_type, int data_size, int container_word_bits,
                                       int *offset, enum AVCodecID *codec)
 {
     int word_bits;
@@ -55,6 +55,12 @@ static int s337m_get_offset_and_codec(void *avc,
         if (avc)
             avpriv_report_missing_feature(avc, "Data type %#x in SMPTE 337M", data_type & 0x1F);
         return AVERROR_PATCHWELCOME;
+    }
+    if (container_word_bits &&
+        !(container_word_bits == 16 && word_bits == 16) &&
+        !(container_word_bits == 24 && word_bits == 20) &&
+        !(container_word_bits == 24 && word_bits == 24)) {
+        return AVERROR_INVALIDDATA;
     }
 
     if (codec)
@@ -105,7 +111,7 @@ static int s337m_probe(const AVProbeData *p)
             data_size = AV_RL24(buf + 3);
         }
 
-        if (s337m_get_offset_and_codec(NULL, state, data_type, data_size, &offset, NULL))
+        if (s337m_get_offset_and_codec(NULL, state, data_type, data_size, 0, &offset, NULL))
             continue;
 
         i = IS_16LE_MARKER(state) ? 0 : IS_20LE_MARKER(state) ? 1 : 2;
@@ -143,13 +149,16 @@ static void bswap_buf24(uint8_t *data, int size)
         FFSWAP(uint8_t, data[0], data[2]);
 }
 
-int ff_s337m_get_packet(AVIOContext *pb, AVPacket *pkt, int size, enum AVCodecID *codec, void *avc)
+int ff_s337m_get_packet(AVIOContext *pb, AVPacket *pkt, int size, enum AVCodecID *codec, void *avc, int container_word_bits)
 {
     uint64_t state = 0;
     int ret, data_type, data_size, offset;
     int64_t orig_pos = avio_tell(pb);
 
-    while (!IS_LE_MARKER(state)) {
+    if (container_word_bits && container_word_bits != 16 && container_word_bits != 24)
+        return AVERROR_INVALIDDATA;
+    while ((container_word_bits == 24 || !IS_16LE_MARKER(state))
+        && (container_word_bits == 16 || !IS_20LE_MARKER(state) && !IS_24LE_MARKER(state))) {
         state = (state << 8) | avio_r8(pb);
         if (avio_feof(pb))
             return AVERROR_EOF;
@@ -167,7 +176,7 @@ int ff_s337m_get_packet(AVIOContext *pb, AVPacket *pkt, int size, enum AVCodecID
         data_size = avio_rl24(pb);
     }
 
-    if ((ret = s337m_get_offset_and_codec(avc, state, data_type, data_size, &offset, codec)) < 0)
+    if ((ret = s337m_get_offset_and_codec(avc, state, data_type, data_size, container_word_bits, &offset, codec)) < 0)
         return ret;
     offset = FFMIN(offset, size - (avio_tell(pb) - orig_pos));
 
@@ -187,7 +196,7 @@ static int s337m_read_packet(AVFormatContext *s, AVPacket *pkt)
     enum AVCodecID codec;
     int ret;
 
-    if ((ret = ff_s337m_get_packet(s->pb, pkt, avio_size(s->pb), &codec, s)) < 0)
+    if ((ret = ff_s337m_get_packet(s->pb, pkt, avio_size(s->pb), &codec, s, 0)) < 0)
         return ret;
 
     if (!s->nb_streams) {
