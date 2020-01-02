@@ -45,6 +45,7 @@
 #include "riff.h"
 #include "w64.h"
 #include "spdif.h"
+#include "s337m.h"
 
 typedef struct WAVDemuxContext {
     const AVClass *class;
@@ -61,9 +62,11 @@ typedef struct WAVDemuxContext {
     int ignore_length;
     int max_size;
     int spdif;
+    int s337m;
     int smv_given_first;
     int unaligned; // e.g. if an odd number of bytes ID3 tag was prepended
     int rifx; // RIFX: integer byte order for parameters is big endian
+    int non_pcm_mode;
 } WAVDemuxContext;
 
 #define OFFSET(x) offsetof(WAVDemuxContext, x)
@@ -74,12 +77,18 @@ static const AVOption demux_options[] = {
     { "ignore_length", "Ignore length", OFFSET(ignore_length), AV_OPT_TYPE_BOOL, { .i64 = 0 }, 0, 1, DEC },
 #endif
     { "max_size",      "max size of single packet", OFFSET(max_size), AV_OPT_TYPE_INT, { .i64 = 4096 }, 1024, 1 << 22, DEC },
+#if CONFIG_S337M_DEMUXER
+    {"non_pcm_mode", "Chooses what to do with s337m", OFFSET(non_pcm_mode), AV_OPT_TYPE_INT, {.i64 = 1}, 0, 1, DEC, "non_pcm_mode"},
+    {"copy"        , "Pass s337m through unchanged", 0, AV_OPT_TYPE_CONST, {.i64 = 0}, 0, 1, DEC, "non_pcm_mode"},
+    {"demux"       , "Demux s337m"                 , 0, AV_OPT_TYPE_CONST, {.i64 = 1}, 0, 1, DEC, "non_pcm_mode"},
+#endif
     { NULL },
 };
 
-static void set_spdif(AVFormatContext *s, WAVDemuxContext *wav)
+static void set_spdif_s337m(AVFormatContext *s, WAVDemuxContext *wav)
 {
-    if (CONFIG_SPDIF_DEMUXER && s->streams[0]->codecpar->codec_tag == 1) {
+    AVCodecParameters *par = s->streams[0]->codecpar;
+    if ((CONFIG_SPDIF_DEMUXER || CONFIG_S337M_DEMUXER) && par->codec_tag == 1) {
         enum AVCodecID codec;
         int len = 1<<16;
         int ret = ffio_ensure_seekback(s->pb, len);
@@ -92,10 +101,24 @@ static void set_spdif(AVFormatContext *s, WAVDemuxContext *wav)
                 int64_t pos = avio_tell(s->pb);
                 len = ret = avio_read(s->pb, buf, len);
                 if (len >= 0) {
-                    ret = ff_spdif_probe(buf, len, &codec);
-                    if (ret > AVPROBE_SCORE_EXTENSION) {
-                        s->streams[0]->codecpar->codec_id = codec;
-                        wav->spdif = 1;
+                    if (CONFIG_SPDIF_DEMUXER) {
+                        ret = ff_spdif_probe(buf, len, &codec);
+                        if (ret > AVPROBE_SCORE_EXTENSION) {
+                            par->codec_id = codec;
+                            wav->spdif = 1;
+                        }
+                    }
+                    if (CONFIG_S337M_DEMUXER && !wav->spdif
+                        && (par->codec_id == AV_CODEC_ID_PCM_S16LE || par->codec_id == AV_CODEC_ID_PCM_S24LE) && par->ch_layout.nb_channels == 2) {
+                        ret = ff_s337m_probe(buf, len, &codec, par->bits_per_coded_sample);
+                        if (ret > AVPROBE_SCORE_EXTENSION) {
+                            if (wav->non_pcm_mode) {
+                                par->codec_id = codec;
+                                wav->s337m = 1;
+                            } else {
+                                av_log(s, AV_LOG_INFO, "Passing through S337M data: codec will not be reported\n");
+                            }
+                        }
                     }
                 }
                 avio_seek(s->pb, pos, SEEK_SET);
@@ -104,7 +127,7 @@ static void set_spdif(AVFormatContext *s, WAVDemuxContext *wav)
         }
 
         if (ret < 0)
-            av_log(s, AV_LOG_WARNING, "Cannot check for SPDIF\n");
+            av_log(s, AV_LOG_WARNING, "Cannot check for SPDIF/S337M\n");
     }
 }
 
@@ -668,7 +691,7 @@ break_loop:
     ff_metadata_conv_ctx(s, NULL, wav_metadata_conv);
     ff_metadata_conv_ctx(s, NULL, ff_riff_info_conv);
 
-    set_spdif(s, wav);
+    set_spdif_s337m(s, wav);
 
     return 0;
 }
@@ -770,6 +793,10 @@ smv_out:
         wav->data_end = avio_tell(s->pb) + left;
     }
 
+    if (CONFIG_S337M_DEMUXER && wav->s337m == 1) {
+        size = FFMIN(S337M_MAX_OFFSET, left);
+        ret  = ff_s337m_get_packet(s->pb, pkt, size, NULL, s, st->codecpar->bits_per_coded_sample);
+    } else {
     size = wav->max_size;
     if (st->codecpar->block_align > 1) {
         if (size < st->codecpar->block_align)
@@ -778,6 +805,8 @@ smv_out:
     }
     size = FFMIN(size, left);
     ret  = av_get_packet(s->pb, pkt, size);
+    }
+
     if (ret < 0)
         return ret;
     pkt->stream_index = 0;
@@ -964,7 +993,7 @@ static int w64_read_header(AVFormatContext *s)
 
     avio_seek(pb, data_ofs, SEEK_SET);
 
-    set_spdif(s, wav);
+    set_spdif_s337m(s, wav);
 
     return 0;
 }
