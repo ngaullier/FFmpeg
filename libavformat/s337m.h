@@ -30,8 +30,9 @@
  * @param size Maximum IO read size available for reading at current position
  * @param codec Returns AV_CODEC_ID_DOLBY_E
  * @param avc For av_log
+ * @param container_word_bits 16,24, or 0 for autodetect
  * @return = 0 on success (an error is raised if no s337m was found)
  */
-int ff_s337m_get_packet(AVIOContext *pb, AVPacket *pkt, int size, enum AVCodecID *codec, void *avc);
+int ff_s337m_get_packet(AVIOContext *pb, AVPacket *pkt, int size, enum AVCodecID *codec, void *avc, int container_word_bits);
 
 #endif /* AVFORMAT_S337M_H */
