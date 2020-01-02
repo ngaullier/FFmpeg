@@ -135,6 +135,38 @@ static int s337m_probe(const AVProbeData *p)
     return 0;
 }
 
+int ff_s337m_probe(const uint8_t *buf, int size, enum AVCodecID *codec, int container_word_bits)
+{
+    int pos = 0;
+    int consecutive_codes = 0;
+
+    if ( size < S337M_MIN_OFFSET)
+        return 0;
+    size = FFMIN(3 * S337M_MAX_OFFSET, size);
+    if (container_word_bits != 16 && container_word_bits != 24)
+        return AVERROR_INVALIDDATA;
+
+    do {
+        uint64_t state;
+        int data_type, data_size, offset;
+        while (pos < size - 12 && !buf[pos]) {
+            pos++;
+        }
+        if (pos >= size - 12 || pos < S337M_PROBE_GUARDBAND_MIN_BYTES || pos % (container_word_bits == 16 ? 4 : 6))
+            return 0;
+        state = container_word_bits == 16 ? AV_RB32(buf + pos) : AV_RB48(buf + pos);
+        if (!IS_LE_MARKER(state))
+            return 0;
+        data_type = container_word_bits == 16 ? AV_RL16(buf + pos + 4) : AV_RL24(buf + pos + 6);
+        data_size = container_word_bits == 16 ? AV_RL16(buf + pos + 6) : AV_RL24(buf + pos + 9);
+        if (s337m_get_offset_and_codec(NULL, state, data_type, data_size, container_word_bits, &offset, codec))
+            return 0;
+        pos = ++consecutive_codes * (offset + 4*(container_word_bits == 16 ? 4 : 6));
+    } while (consecutive_codes < 3);
+
+    return AVPROBE_SCORE_MAX;
+}
+
 static int s337m_read_header(AVFormatContext *s)
 {
     s->ctx_flags |= AVFMTCTX_NOHEADER;
