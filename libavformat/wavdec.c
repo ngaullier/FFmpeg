@@ -797,14 +797,14 @@ smv_out:
         size = FFMIN(S337M_MAX_OFFSET, left);
         ret  = ff_s337m_get_packet(s->pb, pkt, size, NULL, s, st->codecpar->bits_per_coded_sample);
     } else {
-    size = wav->max_size;
-    if (st->codecpar->block_align > 1) {
-        if (size < st->codecpar->block_align)
-            size = st->codecpar->block_align;
-        size = (size / st->codecpar->block_align) * st->codecpar->block_align;
-    }
-    size = FFMIN(size, left);
-    ret  = av_get_packet(s->pb, pkt, size);
+        size = wav->max_size;
+        if (st->codecpar->block_align > 1) {
+            if (size < st->codecpar->block_align)
+                size = st->codecpar->block_align;
+            size = (size / st->codecpar->block_align) * st->codecpar->block_align;
+        }
+        size = FFMIN(size, left);
+        ret  = av_get_packet(s->pb, pkt, size);
     }
 
     if (ret < 0)
