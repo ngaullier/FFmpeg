@@ -99,6 +99,7 @@ REMUX = $(call ALLYES, $(firstword $(1))_MUXER $(lastword $(1))_DEMUXER \
                        $(2) FILE_PROTOCOL PIPE_PROTOCOL FRAMECRC_MUXER)
 
 DEMDEC  = $(call ALLYES, $(1)_DEMUXER $(2:%=%_DECODER) $(3) FILE_PROTOCOL)
+DEMDEMDEC = $(call ALLYES, $(1)_DEMUXER $(2)_DEMUXER $(3:%=%_DECODER))
 ENCMUX  = $(call ALLYES, $(1:%=%_ENCODER) $(2)_MUXER   $(3))
 
 FRAMEMD5 = $(call ALLYES, $(1)_DEMUXER $(2:%=%_DECODER) $(3)                  \
