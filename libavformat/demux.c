@@ -1736,8 +1736,9 @@ static void estimate_timings_from_bit_rate(AVFormatContext *ic)
 #define DURATION_MAX_READ_SIZE 250000LL
 #define DURATION_MAX_RETRY 6
 #define MORE_DURATIONS_MAX_RETRY 4
+#define VIDEO_PACKET_MIN_READ_COUNT 4
 
-/* only usable for MPEG-PS streams */
+/* only usable for MPEG-PS/TS streams */
 static void estimate_timings_from_pts(AVFormatContext *ic, int64_t old_offset)
 {
     FFFormatContext *const si = ffformatcontext(ic);
@@ -1748,6 +1749,8 @@ static void estimate_timings_from_pts(AVFormatContext *ic, int64_t old_offset)
     int64_t filesize, offset, duration;
     int retry = 0;
     int retry_get_more_durations = 0;
+    int first_video_pkt_stream_index = -1;
+    int first_video_pkt_read_count;
 
     /* flush packet queue */
     ff_flush_packet_queue(ic);
@@ -1822,6 +1825,12 @@ static void estimate_timings_from_pts(AVFormatContext *ic, int64_t old_offset)
                         st->duration = duration;
                     sti->info->last_duration = duration;
                 }
+                if (st->codecpar->codec_type == AVMEDIA_TYPE_VIDEO && first_video_pkt_stream_index < 0) {
+                    first_video_pkt_stream_index = pkt->stream_index;
+                    first_video_pkt_read_count = 1;
+                } else if (pkt->stream_index == first_video_pkt_stream_index) {
+                    first_video_pkt_read_count++;
+                }
             }
             av_packet_unref(pkt);
         }
@@ -1834,7 +1843,8 @@ static void estimate_timings_from_pts(AVFormatContext *ic, int64_t old_offset)
                 switch (st->codecpar->codec_type) {
                     case AVMEDIA_TYPE_VIDEO:
                     case AVMEDIA_TYPE_AUDIO:
-                        if (st->duration == AV_NOPTS_VALUE)
+                        if (st->duration == AV_NOPTS_VALUE ||
+                            i == first_video_pkt_stream_index && first_video_pkt_read_count < VIDEO_PACKET_MIN_READ_COUNT)
                             is_end = 0;
                 }
             }
