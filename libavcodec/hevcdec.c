@@ -338,6 +338,8 @@ static void export_stream_params(HEVCContext *s, const HEVCSPS *sps)
     avctx->has_b_frames        = sps->temporal_layer[sps->max_sub_layers - 1].num_reorder_pics;
     avctx->profile             = sps->ptl.general_ptl.profile_idc;
     avctx->level               = sps->ptl.general_ptl.level_idc;
+    if (sps->ptl.general_ptl.progressive_source_flag && !sps->ptl.general_ptl.interlaced_source_flag)
+        avctx->field_order     = AV_FIELD_PROGRESSIVE;
 
     ff_set_sar(avctx, sps->vui.common.sar);
 

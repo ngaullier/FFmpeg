@@ -96,6 +96,8 @@ static int hevc_parse_slice_header(AVCodecParserContext *s, H2645NAL *nal,
     s->format       = ps->sps->pix_fmt;
     avctx->profile  = ps->sps->ptl.general_ptl.profile_idc;
     avctx->level    = ps->sps->ptl.general_ptl.level_idc;
+    if (ps->sps->ptl.general_ptl.progressive_source_flag && !ps->sps->ptl.general_ptl.interlaced_source_flag)
+        avctx->field_order = AV_FIELD_PROGRESSIVE;
 
     if (ps->vps->vps_timing_info_present_flag) {
         num = ps->vps->vps_num_units_in_tick;

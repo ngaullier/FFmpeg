@@ -247,6 +247,8 @@ static int hevc_set_extradata(AVCodecContext *avctx, FFAMediaFormat *format)
 
         avctx->profile = sps->ptl.general_ptl.profile_idc;
         avctx->level   = sps->ptl.general_ptl.level_idc;
+        if (sps->ptl.general_ptl.progressive_source_flag && !sps->ptl.general_ptl.interlaced_source_flag)
+            avctx->field_order = AV_FIELD_PROGRESSIVE;
 
         if ((ret = h2645_ps_to_nalu(vps->data, vps->data_size, &vps_data, &vps_data_size)) < 0 ||
             (ret = h2645_ps_to_nalu(sps->data, sps->data_size, &sps_data, &sps_data_size)) < 0 ||
