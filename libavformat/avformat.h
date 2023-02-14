@@ -1887,6 +1887,15 @@ typedef struct AVFormatContext {
      * @see skip_estimate_duration_from_pts
      */
     int64_t duration_probesize;
+
+    /**
+     * Enable codec probing.
+     * When disabled: always trust the descriptors and allows pass-through of data such as spdif.
+     * @note mpegts missing PAT/PMT are considered invalid if codec probing is disabled.
+     * - encoding: unused
+     * - decoding: set by user
+     */
+    int probe_streams;
 } AVFormatContext;
 
 /**
