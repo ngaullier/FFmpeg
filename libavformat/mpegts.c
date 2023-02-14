@@ -935,7 +935,7 @@ static int mpegts_set_stream_info(AVStream *st, PESContext *pes,
     st->codecpar->codec_tag = pes->stream_type;
 
     mpegts_find_stream_type(st, pes->stream_type, ISO_types);
-    if (pes->stream_type == 4 || pes->stream_type == 0x0f)
+    if (pes->stream->probe_streams && (pes->stream_type == 4 || pes->stream_type == 0x0f))
         sti->request_probe = 50;
     if ((prog_reg_desc == AV_RL32("HDMV") ||
          prog_reg_desc == AV_RL32("HDPR")) &&
@@ -979,7 +979,8 @@ static int mpegts_set_stream_info(AVStream *st, PESContext *pes,
         stream_type == STREAM_TYPE_PRIVATE_DATA) {
         st->codecpar->codec_type = AVMEDIA_TYPE_DATA;
         st->codecpar->codec_id   = AV_CODEC_ID_BIN_DATA;
-        sti->request_probe = AVPROBE_SCORE_STREAM_RETRY / 5;
+        if (pes->stream->probe_streams)
+            sti->request_probe = AVPROBE_SCORE_STREAM_RETRY / 5;
     }
 
     /* queue a context update if properties changed */
@@ -1214,7 +1215,8 @@ static int mpegts_push_data(MpegTSFilter *filter,
                         pes->stream_id != STREAM_ID_TYPE_E_STREAM) {
                         FFStream *const pes_sti = ffstream(pes->st);
                         pes->state = MPEGTS_PESHEADER;
-                        if (pes->st->codecpar->codec_id == AV_CODEC_ID_NONE && !pes_sti->request_probe) {
+                        if (pes->stream->probe_streams &&
+                            pes->st->codecpar->codec_id == AV_CODEC_ID_NONE && !pes_sti->request_probe) {
                             av_log(pes->stream, AV_LOG_TRACE,
                                     "pid=%x stream_type=%x probing\n",
                                     pes->pid,
@@ -2021,7 +2023,7 @@ int ff_parse_mpeg2_descriptor(AVFormatContext *fc, AVStream *st, int stream_type
         av_log(fc, AV_LOG_TRACE, "reg_desc=%.4s\n", (char *)&st->codecpar->codec_tag);
         if (st->codecpar->codec_id == AV_CODEC_ID_NONE || sti->request_probe > 0) {
             mpegts_find_stream_type(st, st->codecpar->codec_tag, REGD_types);
-            if (st->codecpar->codec_tag == MKTAG('B', 'S', 'S', 'D'))
+            if (fc->probe_streams && st->codecpar->codec_tag == MKTAG('B', 'S', 'S', 'D'))
                 sti->request_probe = 50;
         }
         break;

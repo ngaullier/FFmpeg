@@ -563,7 +563,7 @@ redo:
         avio_seek(s->pb, -8, SEEK_CUR);
         if (!memcmp(buf, avs_seqh, 4) && (buf[6] != 0 || buf[7] != 1))
             codec_id = AV_CODEC_ID_CAVS;
-        else
+        else if (s->probe_streams)
             request_probe= 1;
         type = AVMEDIA_TYPE_VIDEO;
     } else if (startcode == PRIVATE_STREAM_2) {
@@ -574,7 +574,8 @@ redo:
         if (m->sofdec > 0) {
             codec_id = AV_CODEC_ID_ADPCM_ADX;
             // Auto-detect AC-3
-            request_probe = 50;
+            if (s->probe_streams)
+                request_probe = 50;
         } else if (m->imkh_cctv && startcode == 0x1c0 && len > 80) {
             codec_id = AV_CODEC_ID_PCM_ALAW;
             request_probe = 50;

@@ -206,7 +206,8 @@ static int wav_parse_fmt_tag(AVFormatContext *s, int64_t size, AVStream *st)
     ret = ff_get_wav_header(s, pb, st->codecpar, size, wav->rifx);
     if (ret < 0)
         return ret;
-    handle_stream_probing(st);
+    if (s->probe_streams)
+        handle_stream_probing(st);
 
     ffstream(st)->need_parsing = AVSTREAM_PARSE_FULL_RAW;
 
@@ -988,7 +989,8 @@ static int w64_read_header(AVFormatContext *s)
     ff_metadata_conv_ctx(s, NULL, wav_metadata_conv);
     ff_metadata_conv_ctx(s, NULL, ff_riff_info_conv);
 
-    handle_stream_probing(st);
+    if (s->probe_streams)
+        handle_stream_probing(st);
     ffstream(st)->need_parsing = AVSTREAM_PARSE_FULL_RAW;
 
     avio_seek(pb, data_ofs, SEEK_SET);

@@ -1713,6 +1713,15 @@ typedef struct AVFormatContext {
      * @return 0 on success, a negative AVERROR code on failure
      */
     int (*io_close2)(struct AVFormatContext *s, AVIOContext *pb);
+
+    /**
+     * Enable codec probing.
+     * When disabled: always trust the descriptors and allows pass-through of data such as spdif.
+     * @note mpegts missing PAT/PMT are considered invalid if codec probing is disabled.
+     * - encoding: unused
+     * - decoding: set by user
+     */
+    int probe_streams;
 } AVFormatContext;
 
 /**
