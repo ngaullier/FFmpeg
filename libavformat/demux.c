@@ -1735,6 +1735,7 @@ static void estimate_timings_from_bit_rate(AVFormatContext *ic)
 
 #define DURATION_MAX_READ_SIZE 250000LL
 #define DURATION_MAX_RETRY 6
+#define MORE_DURATIONS_MAX_RETRY 4
 
 /* only usable for MPEG-PS streams */
 static void estimate_timings_from_pts(AVFormatContext *ic, int64_t old_offset)
@@ -1746,6 +1747,7 @@ static void estimate_timings_from_pts(AVFormatContext *ic, int64_t old_offset)
     int is_end;
     int64_t filesize, offset, duration;
     int retry = 0;
+    int retry_get_more_durations = 0;
 
     /* flush packet queue */
     ff_flush_packet_queue(ic);
@@ -1776,7 +1778,6 @@ static void estimate_timings_from_pts(AVFormatContext *ic, int64_t old_offset)
     /* XXX: may need to support wrapping */
     filesize = ic->pb ? avio_size(ic->pb) : 0;
     do {
-        is_end = found_duration;
         offset = filesize - (DURATION_MAX_READ_SIZE << retry);
         if (offset < 0)
             offset = 0;
@@ -1826,7 +1827,7 @@ static void estimate_timings_from_pts(AVFormatContext *ic, int64_t old_offset)
         }
 
         /* check if all audio/video streams have valid duration */
-        if (!is_end) {
+        if (found_duration) {
             is_end = 1;
             for (unsigned i = 0; i < ic->nb_streams; i++) {
                 const AVStream *const st = ic->streams[i];
@@ -1839,6 +1840,7 @@ static void estimate_timings_from_pts(AVFormatContext *ic, int64_t old_offset)
             }
         }
     } while (!is_end &&
+             (!found_duration || ++retry_get_more_durations <= MORE_DURATIONS_MAX_RETRY) &&
              offset &&
              ++retry <= DURATION_MAX_RETRY);
 
