@@ -1104,7 +1104,7 @@ static int dolby_e_decode_frame(AVCodecContext *avctx, AVFrame *frame,
         return ret;
 
     if (s->metadata.nb_programs > 1 && !s->metadata.multi_prog_warned) {
-        av_log(avctx, AV_LOG_WARNING, "Stream has %d programs (configuration %d), "
+        av_log(avctx, AV_LOG_VERBOSE, "Stream has %d programs (configuration %d), "
                "channels will be output in native order.\n",
                s->metadata.nb_programs, s->metadata.prog_conf);
         s->metadata.multi_prog_warned = 1;
