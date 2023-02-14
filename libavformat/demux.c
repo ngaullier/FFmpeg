@@ -1794,7 +1794,7 @@ static void estimate_timings_from_pts(AVFormatContext *ic, int64_t old_offset)
                 break;
 
             do {
-                ret = ff_read_packet(ic, pkt);
+                ret = read_frame_internal(ic, pkt);
             } while (ret == AVERROR(EAGAIN));
             if (ret != 0)
                 break;
