@@ -51,6 +51,24 @@ static const AVOption options[] = {
 
     { "downmix", "Request a specific channel layout from the decoder", OFFSET(downmix_layout), AV_OPT_TYPE_CHLAYOUT, {.str = NULL}, .flags = PAR },
 
+// Bit stream information from ac3dec.h
+    { "bitstream_mode",         "bitstream mode", OFFSET(bitstream_mode), AV_OPT_TYPE_INT, {.i64 = -1 }, -1, 7, AV_OPT_FLAG_EXPORT},
+    { "channel_mode",           "channel mode", OFFSET(channel_mode), AV_OPT_TYPE_INT, {.i64 = -1 }, -1, 7, AV_OPT_FLAG_EXPORT},
+    { "lfe_on",                 "lfe channel in use", OFFSET(lfe_on), AV_OPT_TYPE_INT, {.i64 = -1 }, -1, 1, AV_OPT_FLAG_EXPORT},
+    { "dialnorm",               "dialog level in dBFS", OFFSET(dialog_normalization[0]), AV_OPT_TYPE_INT, {.i64 = -32 }, -32, 0, AV_OPT_FLAG_EXPORT},
+    { "compression_exists",     "compression field is valid for frame", OFFSET(compression_exists[0]),AV_OPT_TYPE_INT, {.i64 = -1 }, -1, 1, AV_OPT_FLAG_EXPORT},
+    { "channel_map",     "compression field is valid for frame", OFFSET(channel_map), AV_OPT_TYPE_INT, {.i64 = -1 }, -1, 1 << 16, AV_OPT_FLAG_EXPORT},
+    { "preferred_downmix",      "Preferred 2-channel downmix mode", OFFSET(preferred_downmix), AV_OPT_TYPE_INT, {.i64 = -1 }, -1, 3, AV_OPT_FLAG_EXPORT},
+    { "center_mix_level",       "Center mix level index", OFFSET(center_mix_level), AV_OPT_TYPE_INT, {.i64 = -1 }, -1, 7, AV_OPT_FLAG_EXPORT},
+    { "center_mix_level_ltrt",  "Center mix level index for Lt/Rt", OFFSET(center_mix_level_ltrt), AV_OPT_TYPE_INT, {.i64 = -1 }, -1, 7, AV_OPT_FLAG_EXPORT},
+    { "surround_mix_level",     "Surround mix level index", OFFSET(surround_mix_level), AV_OPT_TYPE_INT, {.i64 = -1 }, -1, 7, AV_OPT_FLAG_EXPORT},
+    { "surround_mix_level_ltrt","Surround mix level index for Lt/Rt", OFFSET(surround_mix_level_ltrt),AV_OPT_TYPE_INT, {.i64 = -1 }, -1, 7, AV_OPT_FLAG_EXPORT},
+    { "lfe_mix_level",          "LFE mix level index", OFFSET(lfe_mix_level),AV_OPT_TYPE_INT, {.i64 = -1 }, -1, 31, AV_OPT_FLAG_EXPORT},
+    { "eac3",                   "indicates if current frame is E-AC-3", OFFSET(eac3),AV_OPT_TYPE_INT, {.i64 = -1 }, -1, 1, AV_OPT_FLAG_EXPORT},
+    { "eac3_subsbtreamid_found","bitstream has E-AC-3 additional substream(s)", OFFSET(eac3_subsbtreamid_found),AV_OPT_TYPE_INT, {.i64 = 0 }, 0, 1, AV_OPT_FLAG_EXPORT},
+    { "dolby_surround_mode",    "dolby surround mode", OFFSET(dolby_surround_mode), AV_OPT_TYPE_INT, {.i64 = -1 }, -1, 3, AV_OPT_FLAG_EXPORT},
+    { "dolby_surround_ex_mode", "dolby surround ex mode", OFFSET(dolby_surround_ex_mode), AV_OPT_TYPE_INT, {.i64 = -1 }, -1, 3, AV_OPT_FLAG_EXPORT},
+    { "dolby_headphone_mode",   "dolby headphone mode", OFFSET(dolby_headphone_mode), AV_OPT_TYPE_INT, {.i64 = -1 }, -1, 3, AV_OPT_FLAG_EXPORT},
     { NULL},
 };
 
