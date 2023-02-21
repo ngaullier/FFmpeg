@@ -2460,6 +2460,7 @@ static int decode_extension_payload(AACContext *ac, GetBitContext *gb, int cnt,
     if (ac->avctx->debug & FF_DEBUG_STARTCODE)
         av_log(ac->avctx, AV_LOG_DEBUG, "extension type: %d len:%d\n", type, cnt);
 
+    ac->ext_flags |= 1 << type;
     switch (type) { // extension type
     case EXT_SBR_DATA_CRC:
         crc_flag++;
@@ -2501,6 +2502,8 @@ static int decode_extension_payload(AACContext *ac, GetBitContext *gb, int cnt,
         break;
     case EXT_DYNAMIC_RANGE:
         res = decode_dynamic_range(&ac->che_drc, gb);
+        ac->drc = 1;
+        ac->prog_ref_level = -ac->che_drc.prog_ref_level / 4.0;
         break;
     case EXT_FILL:
         decode_fill(ac, gb, 8 * cnt - 4);
@@ -3133,10 +3136,18 @@ static int aac_decode_er_frame(AVCodecContext *avctx, void *data,
     return 0;
 }
 
+#define MAX_DISPLAY_ELEMENTS 16
+static const char * elem_type_str[] = {
+    "SCE", "CPE", "CCE", "LFE", "DSE", "PCE"
+};
+
 static int aac_decode_frame_int(AVCodecContext *avctx, AVFrame *frame,
                                 int *got_frame_ptr, GetBitContext *gb,
                                 const AVPacket *avpkt)
 {
+    int display_elements_size = 0;
+    char display_elements[ 7*MAX_DISPLAY_ELEMENTS + 1 ];
+    char *context_display_elements;
     AACContext *ac = avctx->priv_data;
     ChannelElement *che = NULL, *che_prev = NULL;
     enum RawDataBlockType elem_type, che_prev_type = TYPE_END;
@@ -3148,7 +3159,9 @@ static int aac_decode_frame_int(AVCodecContext *avctx, AVFrame *frame,
 
     ac->frame = frame;
 
+    ac->adts = 0;
     if (show_bits(gb, 12) == 0xfff) {
+        ac->adts = 1;
         if ((err = parse_adts_frame_header(ac, gb)) < 0) {
             av_log(avctx, AV_LOG_ERROR, "Error decoding AAC frame header.\n");
             goto fail;
@@ -3169,12 +3182,24 @@ static int aac_decode_frame_int(AVCodecContext *avctx, AVFrame *frame,
 
     payload_alignment = get_bits_count(gb);
     ac->tags_mapped = 0;
+    display_elements[0] = 0;
     // parse
     while ((elem_type = get_bits(gb, 3)) != TYPE_END) {
         elem_id = get_bits(gb, 4);
 
         if (avctx->debug & FF_DEBUG_STARTCODE)
             av_log(avctx, AV_LOG_DEBUG, "Elem type:%x id:%x\n", elem_type, elem_id);
+
+        if (elem_type < TYPE_FIL && display_elements_size < 7*MAX_DISPLAY_ELEMENTS)
+        {
+            strcpy(display_elements + display_elements_size, elem_type_str[elem_type]);
+            display_elements_size += 3;
+            display_elements[display_elements_size++] = '[';
+            display_elements[display_elements_size++] = '0' + elem_id;
+            display_elements[display_elements_size++] = ']';
+            display_elements[display_elements_size++] = ' ';
+            display_elements[display_elements_size] = 0;
+        }
 
         if (!avctx->ch_layout.nb_channels && elem_type != TYPE_PCE) {
             err = AVERROR_INVALIDDATA;
@@ -3296,6 +3321,19 @@ static int aac_decode_frame_int(AVCodecContext *avctx, AVFrame *frame,
             goto fail;
         }
     }
+
+    if (display_elements_size > 0)
+        display_elements[--display_elements_size] = 0;
+    if (ac->display_elements) {
+        av_opt_get(ac, "elements", 0, (uint8_t**)&context_display_elements);
+        if (strcmp(display_elements, context_display_elements))
+        {
+            av_log(avctx, AV_LOG_WARNING, "Element chain has changed: %s", display_elements);
+            av_opt_set(ac, "elements", display_elements, 0);
+        }
+        av_free(context_display_elements);
+    } else
+            av_opt_set(ac, "elements", display_elements, 0);
 
     if (!avctx->ch_layout.nb_channels) {
         *got_frame_ptr = 0;
@@ -3453,6 +3491,7 @@ static void aacdec_init(AACContext *c)
  * AVOptions for Japanese DTV specific extensions (ADTS only)
  */
 #define AACDEC_FLAGS AV_OPT_FLAG_DECODING_PARAM | AV_OPT_FLAG_AUDIO_PARAM
+#define OFFSET(param) offsetof(AACContext, param)
 static const AVOption options[] = {
     {"dual_mono_mode", "Select the channel to decode for dual mono",
      offsetof(AACContext, force_dmono_mode), AV_OPT_TYPE_INT, {.i64=-1}, -1, 2,
@@ -3470,6 +3509,13 @@ static const AVOption options[] = {
         { .i64 = CHANNEL_ORDER_DEFAULT }, .flags = AACDEC_FLAGS, "channel_order" },
       { "coded",    "order in which the channels are coded in the bitstream",
         0, AV_OPT_TYPE_CONST, { .i64 = CHANNEL_ORDER_CODED }, .flags = AACDEC_FLAGS, "channel_order" },
+
+// Bit stream information
+    {"adts",            "indicate use of adts", OFFSET(adts), AV_OPT_TYPE_INT, {.i64= -1}, -1, 1, AV_OPT_FLAG_EXPORT},
+    {"ext_flags",       "flag of extension types found", OFFSET(ext_flags), AV_OPT_TYPE_INT, {.i64= 0}, 0, 1 << 4, AV_OPT_FLAG_EXPORT},
+    {"drc",             "indicate use of drc", OFFSET(drc), AV_OPT_TYPE_INT, {.i64= 0}, 0, 1, AV_OPT_FLAG_EXPORT},
+    {"prog_ref_level",  "drc program reference level", OFFSET(prog_ref_level), AV_OPT_TYPE_FLOAT, {.dbl = -99}, -99, 0, AV_OPT_FLAG_EXPORT},
+    {"elements",        "aac elements chain", OFFSET(display_elements), AV_OPT_TYPE_STRING, {.str = NULL }, CHAR_MIN, 7*16+1, AV_OPT_FLAG_EXPORT},
 
     {NULL},
 };
