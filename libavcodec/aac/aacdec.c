@@ -1907,6 +1907,7 @@ static int decode_extension_payload(AACDecContext *ac, GetBitContext *gb, int cn
     if (ac->avctx->debug & FF_DEBUG_STARTCODE)
         av_log(ac->avctx, AV_LOG_DEBUG, "extension type: %d len:%d\n", type, cnt);
 
+    ac->ext_flags |= 1 << type;
     switch (type) { // extension type
     case EXT_SBR_DATA_CRC:
         crc_flag++;
@@ -1950,6 +1951,8 @@ static int decode_extension_payload(AACDecContext *ac, GetBitContext *gb, int cn
         break;
     case EXT_DYNAMIC_RANGE:
         res = decode_dynamic_range(&ac->che_drc, gb);
+        ac->drc = 1;
+        ac->prog_ref_level = -ac->che_drc.prog_ref_level / 4.0;
         break;
     case EXT_FILL:
         decode_fill(ac, gb, 8 * cnt - 4);
@@ -2200,9 +2203,17 @@ static int aac_decode_er_frame(AVCodecContext *avctx, AVFrame *frame,
     return 0;
 }
 
+#define MAX_DISPLAY_ELEMENTS 16
+static const char * elem_type_str[] = {
+    "SCE", "CPE", "CCE", "LFE", "DSE", "PCE"
+};
+
 static int decode_frame_ga(AVCodecContext *avctx, AACDecContext *ac,
                            GetBitContext *gb, int *got_frame_ptr)
 {
+    int display_elements_size = 0;
+    char display_elements[ 7*MAX_DISPLAY_ELEMENTS + 1 ];
+    char *context_display_elements;
     int err;
     int is_dmono;
     int elem_id;
@@ -2219,6 +2230,17 @@ static int decode_frame_ga(AVCodecContext *avctx, AACDecContext *ac,
 
         if (avctx->debug & FF_DEBUG_STARTCODE)
             av_log(avctx, AV_LOG_DEBUG, "Elem type:%x id:%x\n", elem_type, elem_id);
+
+        if (elem_type < TYPE_FIL && display_elements_size < 7*MAX_DISPLAY_ELEMENTS)
+        {
+            strcpy(display_elements + display_elements_size, elem_type_str[elem_type]);
+            display_elements_size += 3;
+            display_elements[display_elements_size++] = '[';
+            display_elements[display_elements_size++] = '0' + elem_id;
+            display_elements[display_elements_size++] = ']';
+            display_elements[display_elements_size++] = ' ';
+            display_elements[display_elements_size] = 0;
+        }
 
         if (!avctx->ch_layout.nb_channels && elem_type != TYPE_PCE)
             return AVERROR_INVALIDDATA;
@@ -2332,6 +2354,19 @@ static int decode_frame_ga(AVCodecContext *avctx, AACDecContext *ac,
         }
     }
 
+    if (display_elements_size > 0)
+        display_elements[--display_elements_size] = 0;
+    if (ac->display_elements) {
+        av_opt_get(ac, "elements", 0, (uint8_t**)&context_display_elements);
+        if (strcmp(display_elements, context_display_elements))
+        {
+            av_log(avctx, AV_LOG_WARNING, "Element chain has changed: %s", display_elements);
+            av_opt_set(ac, "elements", display_elements, 0);
+        }
+        av_free(context_display_elements);
+    } else
+            av_opt_set(ac, "elements", display_elements, 0);
+
     if (!avctx->ch_layout.nb_channels)
         return 0;
 
@@ -2384,7 +2419,9 @@ static int aac_decode_frame_int(AVCodecContext *avctx, AVFrame *frame,
     ac->frame = frame;
     *got_frame_ptr = 0;
 
+    ac->adts = 0;
     if (show_bits(gb, 12) == 0xfff) {
+        ac->adts = 1;
         if ((err = parse_adts_frame_header(ac, gb)) < 0) {
             av_log(avctx, AV_LOG_ERROR, "Error decoding AAC frame header.\n");
             goto fail;
@@ -2518,6 +2555,13 @@ static const AVOption options[] = {
         { .i64 = CHANNEL_ORDER_DEFAULT }, .flags = AACDEC_FLAGS, .unit = "channel_order" },
       { "coded",    "order in which the channels are coded in the bitstream",
         0, AV_OPT_TYPE_CONST, { .i64 = CHANNEL_ORDER_CODED }, .flags = AACDEC_FLAGS, .unit = "channel_order" },
+
+// Bit stream information
+    {"adts",            "indicate use of adts", OFF(adts), AV_OPT_TYPE_INT, {.i64= -1}, -1, 1, AV_OPT_FLAG_EXPORT},
+    {"ext_flags",       "flag of extension types found", OFF(ext_flags), AV_OPT_TYPE_INT, {.i64= 0}, 0, 1 << 4, AV_OPT_FLAG_EXPORT},
+    {"drc",             "indicate use of drc", OFF(drc), AV_OPT_TYPE_INT, {.i64= 0}, 0, 1, AV_OPT_FLAG_EXPORT},
+    {"prog_ref_level",  "drc program reference level", OFF(prog_ref_level), AV_OPT_TYPE_FLOAT, {.dbl = -99}, -99, 0, AV_OPT_FLAG_EXPORT},
+    {"elements",        "aac elements chain", OFF(display_elements), AV_OPT_TYPE_STRING, {.str = NULL }, CHAR_MIN, 7*16+1, AV_OPT_FLAG_EXPORT},
 
     {NULL},
 };

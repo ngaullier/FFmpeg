@@ -468,6 +468,16 @@ struct AACDecContext {
     /** @} */
 
     /**
+     * @name Bit stream information export
+     * @{
+     */
+    int   adts;
+    int   ext_flags;
+    int   drc;
+    float prog_ref_level;
+    char *display_elements;
+
+    /**
      * @name temporary aligned temporary buffers
      * (We do not want to have these on the stack.)
      * @{
