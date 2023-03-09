@@ -247,6 +247,26 @@ Loud sounds are fully compressed.  Soft sounds are enhanced.
 
 @end table
 
+@anchor{dolby_e}
+@section dolby_e
+
+Dolby E audio decoder.
+
+This is a raw decoder without any further processing, which means the output
+sample rate is different from the 48KHz input sample rate.
+A dolby E stream is always carried in a s337m muxer, as a raw file
+or muxed in any format that is able to transport an AES3
+or an equivalent uncompressed audio stream (stereo, 48KHz, 16/20/24 bits).
+Currently, only wav and raw file formats are supported. Other formats require
+two passes of processing: a first one to extract the s337m stream,
+and another to decode it.
+In case of AES3, or if the format itself supports it, the non-PCM mode may
+be signaled, but in a more general manner, a stream has to be probed to be
+handled as dolby E rather than pcm.
+By default, stream probing is enabled which forbids pass-through as no s337m
+muxer is implemented yet. In order to pass-through a dolby E stream,
+@code{--non_pcm_mode copy} must be specified (see input muxer options).
+
 @section flac
 
 FLAC audio decoder.
