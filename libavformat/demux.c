@@ -1752,9 +1752,6 @@ static void estimate_timings_from_pts(AVFormatContext *ic, int64_t old_offset)
     int first_video_pkt_stream_index = -1;
     int first_video_pkt_read_count;
 
-    /* flush packet queue */
-    ff_flush_packet_queue(ic);
-
     for (unsigned i = 0; i < ic->nb_streams; i++) {
         AVStream *const st  = ic->streams[i];
         FFStream *const sti = ffstream(st);
@@ -1764,11 +1761,6 @@ static void estimate_timings_from_pts(AVFormatContext *ic, int64_t old_offset)
             st->codecpar->codec_type != AVMEDIA_TYPE_UNKNOWN)
             av_log(ic, AV_LOG_WARNING,
                    "start time for stream %d is not set in estimate_timings_from_pts\n", i);
-
-        if (sti->parser) {
-            av_parser_close(sti->parser);
-            sti->parser = NULL;
-        }
     }
 
     if (ic->skip_estimate_duration_from_pts) {
@@ -1781,6 +1773,9 @@ static void estimate_timings_from_pts(AVFormatContext *ic, int64_t old_offset)
     /* XXX: may need to support wrapping */
     filesize = ic->pb ? avio_size(ic->pb) : 0;
     do {
+        ff_read_frame_flush(ic);
+        first_video_pkt_read_count = 0;
+
         offset = filesize - (DURATION_MAX_READ_SIZE << retry);
         if (offset < 0)
             offset = 0;
@@ -1794,9 +1789,9 @@ static void estimate_timings_from_pts(AVFormatContext *ic, int64_t old_offset)
                 break;
 
             do {
-                ret = read_frame_internal(ic, pkt);
+                ret = av_read_frame(ic, pkt);
             } while (ret == AVERROR(EAGAIN));
-            if (ret != 0)
+            if (!pkt || ret < 0)
                 break;
             read_size += pkt->size;
             st         = ic->streams[pkt->stream_index];
@@ -1876,15 +1871,13 @@ skip_duration_calc:
     fill_all_stream_timings(ic);
 
     avio_seek(ic->pb, old_offset, SEEK_SET);
+
+    ff_read_frame_flush(ic);
     for (unsigned i = 0; i < ic->nb_streams; i++) {
         AVStream *const st  = ic->streams[i];
         FFStream *const sti = ffstream(st);
 
         sti->cur_dts     = sti->first_dts;
-        sti->last_IP_pts = AV_NOPTS_VALUE;
-        sti->last_dts_for_order_check = AV_NOPTS_VALUE;
-        for (int j = 0; j < MAX_REORDER_DELAY + 1; j++)
-            sti->pts_buffer[j] = AV_NOPTS_VALUE;
     }
 }
 
