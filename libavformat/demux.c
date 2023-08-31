@@ -1786,8 +1786,6 @@ static void estimate_timings_from_pts(AVFormatContext *ic, int64_t old_offset)
         for (;;) {
             AVStream *st;
             FFStream *sti;
-            if (read_size >= DURATION_MAX_READ_SIZE << (FFMAX(retry - 1, 0)))
-                break;
 
             do {
                 ret = av_read_frame(ic, pkt);
