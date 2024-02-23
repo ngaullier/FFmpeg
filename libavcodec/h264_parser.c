@@ -124,7 +124,16 @@ static int h264_find_frame_end(H264ParseContext *p, const uint8_t *buf,
             if (nalu_type == H264_NAL_SEI || nalu_type == H264_NAL_SPS ||
                 nalu_type == H264_NAL_PPS || nalu_type == H264_NAL_AUD) {
                 if (pc->frame_start_found) {
-                    i++;
+                    /* Some streams in the wild are missing the zero_byte at the NAL_AUD:
+                     * it is following just afterwards.
+                     * To avoid any accidental borrowing of a byte in the previous frame
+                     * (which would return a negative index and indicate that fetch_timestamps
+                     * has to get the pts from the previous frame),
+                     * better have the start of packet strictly aligned.
+                     * To make it a more general rule, just test the following three bytes are null.
+                     */
+                    i += 1 + (!p->is_avc && state == 5 && i == 3 && nalu_type == H264_NAL_AUD &&
+                        buf_size >= 9 && !AV_RB24(buf + 5));
                     goto found;
                 }
             } else if (nalu_type == H264_NAL_SLICE || nalu_type == H264_NAL_DPA ||
