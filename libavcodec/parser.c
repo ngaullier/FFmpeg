@@ -102,7 +102,7 @@ void ff_fetch_timestamp(AVCodecParserContext *s, int off, int remove, int fuzzy)
                 s->dts    = s->cur_frame_dts[i];
                 s->pts    = s->cur_frame_pts[i];
                 s->pos    = s->cur_frame_pos[i];
-                s->offset = s->next_frame_offset - s->cur_frame_offset[i];
+                s->offset = FFMAX( 0, s->next_frame_offset - s->cur_frame_offset[i]);
             }
             if (remove)
                 s->cur_frame_offset[i] = INT64_MAX;
@@ -158,11 +158,11 @@ int av_parser_parse2(AVCodecParserContext *s, AVCodecContext *avctx,
     }
 
     if (s->fetch_timestamp) {
-        s->fetch_timestamp = 0;
         s->last_pts        = s->pts;
         s->last_dts        = s->dts;
         s->last_pos        = s->pos;
-        ff_fetch_timestamp(s, 0, 0, 0);
+        ff_fetch_timestamp(s, FFMIN(s->fetch_timestamp, 0), 0, 0);
+        s->fetch_timestamp = 0;
     }
     /* WARNING: the returned index can be negative */
     index = s->parser->parser_parse(s, avctx, (const uint8_t **) poutbuf,
@@ -179,12 +179,13 @@ int av_parser_parse2(AVCodecParserContext *s, AVCodecContext *avctx,
 
     /* update the file pointer */
     if (*poutbuf_size) {
+        s->fetch_timestamp   = index >= 0 || !s->frame_offset ? 1 : index;
+
         /* fill the data for the current frame */
         s->frame_offset = s->next_frame_offset;
 
         /* offset of the next frame */
         s->next_frame_offset = s->cur_offset + index;
-        s->fetch_timestamp   = 1;
     } else {
         /* Don't return a pointer to dummy_buf. */
         *poutbuf = NULL;
