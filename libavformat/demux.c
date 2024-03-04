@@ -1171,7 +1171,7 @@ static int parse_packet(AVFormatContext *s, AVPacket *pkt,
     FFStream *const sti = ffstream(st);
     const uint8_t *data = pkt->data;
     int size = pkt->size;
-    int ret = 0, got_output = flush;
+    int ret = 0, got_output = flush, pkt_side_data_consumed = 0;
 
     if (!size && !flush && sti->parser->flags & PARSER_FLAG_COMPLETE_FRAMES) {
         // preserve 0-size sync packets
@@ -1224,10 +1224,21 @@ static int parse_packet(AVFormatContext *s, AVPacket *pkt,
         }
 
         if (pkt->side_data) {
-            out_pkt->side_data       = pkt->side_data;
-            out_pkt->side_data_elems = pkt->side_data_elems;
-            pkt->side_data          = NULL;
-            pkt->side_data_elems    = 0;
+            /* for the first iteration, side_data are simply moved to output.
+             * in case of additional iterations, they are duplicated each time. */
+            if (!pkt_side_data_consumed) {
+                pkt_side_data_consumed = 1;
+                out_pkt->side_data       = pkt->side_data;
+                out_pkt->side_data_elems = pkt->side_data_elems;
+            } else for (int i = 0; i < pkt->side_data_elems; i++) {
+                const AVPacketSideData *const src_sd = &pkt->side_data[i];
+                uint8_t *dst_data = av_packet_new_side_data(out_pkt, src_sd->type, src_sd->size);
+                if (!dst_data) {
+                    ret = AVERROR(ENOMEM);
+                    goto fail;
+                }
+                memcpy(dst_data, src_sd->data, src_sd->size);
+            }
         }
 
         /* set the duration */
@@ -1279,6 +1290,10 @@ static int parse_packet(AVFormatContext *s, AVPacket *pkt,
     }
 
 fail:
+    if (pkt_side_data_consumed) {
+        pkt->side_data          = NULL;
+        pkt->side_data_elems    = 0;
+    }
     if (ret < 0)
         av_packet_unref(out_pkt);
     av_packet_unref(pkt);
