@@ -1820,21 +1820,18 @@ static void estimate_timings_from_bit_rate(AVFormatContext *ic)
 #define DURATION_DEFAULT_MAX_RETRY 6
 #define DURATION_MAX_RETRY 1
 
-/* only usable for MPEG-PS streams */
+/* only usable for MPEG-PS/TS streams */
 static void estimate_timings_from_pts(AVFormatContext *ic, int64_t old_offset)
 {
     FFFormatContext *const si = ffformatcontext(ic);
     AVPacket *const pkt = si->pkt;
-    int num, den, read_size, ret;
+    int read_size, ret;
     int64_t duration_max_read_size = ic->duration_probesize ? ic->duration_probesize >> DURATION_MAX_RETRY : DURATION_DEFAULT_MAX_READ_SIZE;
     int duration_max_retry = ic->duration_probesize ? DURATION_MAX_RETRY : DURATION_DEFAULT_MAX_RETRY;
     int found_duration = 0;
     int is_end;
     int64_t filesize, offset, duration;
     int retry = 0;
-
-    /* flush packet queue */
-    ff_flush_packet_queue(ic);
 
     for (unsigned i = 0; i < ic->nb_streams; i++) {
         AVStream *const st  = ic->streams[i];
@@ -1846,10 +1843,13 @@ static void estimate_timings_from_pts(AVFormatContext *ic, int64_t old_offset)
             av_log(ic, AV_LOG_WARNING,
                    "start time for stream %d is not set in estimate_timings_from_pts\n", i);
 
-        if (sti->parser) {
-            av_parser_close(sti->parser);
-            sti->parser = NULL;
-        }
+        /* Demuxer context updates may occur, particularly while seeking in mpegts,
+         * and this could loose codec parameters in avctx,
+         * so preserve them in codecpar.
+         */
+        if (sti->avctx_inited &&
+            avcodec_parameters_from_context(st->codecpar, sti->avctx))
+            goto skip_duration_calc;
     }
 
     if (ic->skip_estimate_duration_from_pts) {
@@ -1867,6 +1867,7 @@ static void estimate_timings_from_pts(AVFormatContext *ic, int64_t old_offset)
         if (offset < 0)
             offset = 0;
 
+        ff_read_frame_flush(ic);
         avio_seek(ic->pb, offset, SEEK_SET);
         read_size = 0;
         for (;;) {
@@ -1876,7 +1877,7 @@ static void estimate_timings_from_pts(AVFormatContext *ic, int64_t old_offset)
                 break;
 
             do {
-                ret = ff_read_packet(ic, pkt);
+                ret = av_read_frame(ic, pkt);
             } while (ret == AVERROR(EAGAIN));
             if (ret != 0)
                 break;
@@ -1886,15 +1887,6 @@ static void estimate_timings_from_pts(AVFormatContext *ic, int64_t old_offset)
             if (pkt->pts != AV_NOPTS_VALUE &&
                 (st->start_time != AV_NOPTS_VALUE ||
                  sti->first_dts != AV_NOPTS_VALUE)) {
-                if (pkt->duration == 0) {
-                    compute_frame_duration(ic, &num, &den, st, sti->parser, pkt);
-                    if (den && num) {
-                        pkt->duration = av_rescale_rnd(1,
-                                           num * (int64_t) st->time_base.den,
-                                           den * (int64_t) st->time_base.num,
-                                           AV_ROUND_DOWN);
-                    }
-                }
                 duration = pkt->pts + pkt->duration;
                 found_duration = 1;
                 if (st->start_time != AV_NOPTS_VALUE)
@@ -1950,15 +1942,13 @@ skip_duration_calc:
     fill_all_stream_timings(ic);
 
     avio_seek(ic->pb, old_offset, SEEK_SET);
+
+    ff_read_frame_flush(ic);
     for (unsigned i = 0; i < ic->nb_streams; i++) {
         AVStream *const st  = ic->streams[i];
         FFStream *const sti = ffstream(st);
 
         sti->cur_dts     = sti->first_dts;
-        sti->last_IP_pts = AV_NOPTS_VALUE;
-        sti->last_dts_for_order_check = AV_NOPTS_VALUE;
-        for (int j = 0; j < MAX_REORDER_DELAY + 1; j++)
-            sti->pts_buffer[j] = AV_NOPTS_VALUE;
     }
 }
 
