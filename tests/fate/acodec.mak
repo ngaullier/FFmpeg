@@ -159,11 +159,16 @@ fate-acodec-roqaudio: CODEC = roq_dpcm
 fate-acodec-roqaudio: ENCOPTS = -af aresample=22050:tsf=s16p
 fate-acodec-roqaudio: DECOPTS = -af aresample=44100:tsf=s16p
 
-FATE_ACODEC-$(call ENCDEC, S302M, MPEGTS, ARESAMPLE_FILTER) += fate-acodec-s302m
-fate-acodec-s302m: FMT = mpegts
-fate-acodec-s302m: CODEC = s302m
-fate-acodec-s302m: ENCOPTS = -af aresample=48000:tsf=s16p -strict -2
-fate-acodec-s302m: DECOPTS = -af aresample=44100:tsf=s16p
+FATE_ACODEC_S302M-$(call ENCDEC, S302M, MPEGTS, ARESAMPLE_FILTER) += 16bit 20bit 24bit
+FATE_ACODEC_S302M := $(addprefix fate-acodec-s302m-, $(FATE_ACODEC_S302M-yes))
+FATE_ACODEC += $(FATE_ACODEC_S302M)
+fate-acodec-s302m: $(FATE_ACODEC_S302M)
+fate-acodec-s302m-%: CODEC = s302m
+fate-acodec-s302m-%: FMT = mpegts
+fate-acodec-s302m-16bit: ENCOPTS = -af aresample=48000:tsf=s16p -strict -2
+fate-acodec-s302m-16bit: DECOPTS = -af aresample=44100:tsf=s16p
+fate-acodec-s302m-20bit: ENCOPTS = -af aresample=48000:osf=s32p -bits_per_raw_sample 20 -strict -2
+fate-acodec-s302m-24bit: ENCOPTS = -af aresample=48000:osf=s32p -bits_per_raw_sample 24 -strict -2
 
 FATE_ACODEC-$(call ENCDEC, WAVPACK, WV, ARESAMPLE_FILTER) += fate-acodec-wavpack
 fate-acodec-wavpack: FMT = wv
