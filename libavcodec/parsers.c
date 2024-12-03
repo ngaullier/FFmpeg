@@ -73,6 +73,8 @@ extern const AVCodecParser ff_qoi_parser;
 extern const AVCodecParser ff_rv34_parser;
 extern const AVCodecParser ff_sbc_parser;
 extern const AVCodecParser ff_sipr_parser;
+extern const AVCodecParser ff_s337m_16_parser;
+extern const AVCodecParser ff_s337m_24_parser;
 extern const AVCodecParser ff_tak_parser;
 extern const AVCodecParser ff_vc1_parser;
 extern const AVCodecParser ff_vorbis_parser;

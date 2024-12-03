@@ -3489,6 +3489,20 @@ static const AVCodecDescriptor codec_descriptors[] = {
         .props     = AV_CODEC_PROP_INTRA_ONLY | AV_CODEC_PROP_LOSSY,
     },
     {
+        .id        = AV_CODEC_ID_S337M_16,
+        .type      = AVMEDIA_TYPE_AUDIO,
+        .name      = "s337m_16",
+        .long_name = NULL_IF_CONFIG_SMALL("S337M within 16-bit pcm"),
+        .props     = AV_CODEC_PROP_LOSSY,
+    },
+    {
+        .id        = AV_CODEC_ID_S337M_24,
+        .type      = AVMEDIA_TYPE_AUDIO,
+        .name      = "s337m_24",
+        .long_name = NULL_IF_CONFIG_SMALL("S337M within 24-bit pcm"),
+        .props     = AV_CODEC_PROP_LOSSY,
+    },
+    {
         .id        = AV_CODEC_ID_G728,
         .type      = AVMEDIA_TYPE_AUDIO,
         .name      = "g728",

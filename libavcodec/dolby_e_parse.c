@@ -31,6 +31,9 @@ static const uint8_t nb_channels_tab[MAX_PROG_CONF + 1] = {
     8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 6, 6, 6, 6, 6, 6, 6, 4, 4, 4, 4, 8, 8
 };
 
+/* 42965 and 53706 are approximate values (rounding down):
+ * accurate video sync require muxing into s337m/aes
+ */
 static const uint16_t sample_rate_tab[16] = {
     0, 42965, 43008, 44800, 53706, 53760
 };

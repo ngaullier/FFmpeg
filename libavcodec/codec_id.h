@@ -555,6 +555,8 @@ enum AVCodecID {
     AV_CODEC_ID_OSQ,
     AV_CODEC_ID_QOA,
     AV_CODEC_ID_LC3,
+    AV_CODEC_ID_S337M_16,
+    AV_CODEC_ID_S337M_24,
     AV_CODEC_ID_G728,
 
     /* subtitle codecs */

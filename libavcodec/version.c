@@ -35,7 +35,7 @@ unsigned avcodec_version(void)
                   AV_CODEC_ID_PCM_SGA      == 65572 &&
                   AV_CODEC_ID_ADPCM_XMD    == 69683 &&
                   AV_CODEC_ID_CBD2_DPCM    == 81928 &&
-                  AV_CODEC_ID_QOA          == 86121 &&
+                  AV_CODEC_ID_G728         == 86125 &&
                   AV_CODEC_ID_IVTV_VBI     == 94234 &&
                   AV_CODEC_ID_SMPTE_2038   == 98315,
                   "Don't insert new codec ids in the middle of a list");
