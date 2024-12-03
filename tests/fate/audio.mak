@@ -80,6 +80,16 @@ fate-on2avc: CMD = framecrc -i $(TARGET_SAMPLES)/vp7/potter-40.vp7 -frames 30 -v
 FATE_SAMPLES_AUDIO-$(call FRAMECRC, PAF, PAF_AUDIO) += fate-paf-audio
 fate-paf-audio: CMD = framecrc -i $(TARGET_SAMPLES)/paf/hod1-partial.paf -vn
 
+FATE_S337MAUDIO-$(call PCM, S337M_24, S337M_24) += 20bit 24bit
+FATE_S337MAUDIO := $(addprefix fate-s337m-decode-, $(FATE_S337MAUDIO-yes))
+FATE_SAMPLES_AUDIO-yes += $(FATE_S337MAUDIO)
+fate-s337m-decode: $(FATE_S337MAUDIO)
+fate-s337m-decode-%: CMP = oneoff
+fate-s337m-decode-20bit: CMD = pcm -i $(TARGET_SAMPLES)/dolby_e/20-bit-s302m_20-bit_5.1_2.0_phase000750.ts
+fate-s337m-decode-20bit: REF = $(SAMPLES)/dolby_e/20-bit-s302m_20-bit_5.1_2.0_phase000750.ts.pcm
+fate-s337m-decode-24bit: CMD = pcm -i $(TARGET_SAMPLES)/dolby_e/24-bit-s302m_20-bit_5.1_2.0_phase001021.ts
+fate-s337m-decode-24bit: REF = $(SAMPLES)/dolby_e/24-bit-s302m_20-bit_5.1_2.0_phase001021.ts.pcm
+
 FATE_SAMPLES_AUDIO-$(call FRAMECRC, VMD, VMDAUDIO, ARESAMPLE_FILTER) += fate-sierra-vmd-audio
 fate-sierra-vmd-audio: CMD = framecrc -i $(TARGET_SAMPLES)/vmd/12.vmd -vn -af aresample
 

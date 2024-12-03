@@ -136,8 +136,19 @@ fate-qcp-demux: CMD = crc -i $(TARGET_SAMPLES)/qcp/0036580847.QCP -c:a copy
 FATE_SAMPLES_DEMUX-$(call FRAMECRC, R3D, JPEG2000 PCM_S32BE) += fate-redcode-demux
 fate-redcode-demux: CMD = framecrc -i $(TARGET_SAMPLES)/r3d/4MB-sample.r3d -c:v copy -c:a copy
 
-FATE_SAMPLES_DEMUX-$(call FRAMECRC, S337M_16,, S337M_16_PARSER FRAMECRC_MUXER) += fate-s337m-demux
-fate-s337m-demux: CMD = framecrc -i $(TARGET_SAMPLES)/dolby_e/16-11 -c copy -ss 2 -t 1
+FATE_SAMPLES_S337M_DEMUX-$(call FRAMECRC, S337M_16,, S337M_16_PARSER) += raw
+FATE_SAMPLES_S337M_DEMUX-$(call FRAMECRC, S337M_24,, S337M_24_PARSER) += $(if $(CONFIG_WAV_DEMUXER), wav wav-miss1-3-5) \
+                                                                         $(if $(CONFIG_MXF_DEMUXER), mxf) \
+                                                                         $(if $(CONFIG_MPEGTS_DEMUXER), ts-20 ts-24)
+FATE_SAMPLES_S337M_DEMUX := $(addprefix fate-s337m-demux-, $(FATE_SAMPLES_S337M_DEMUX-yes))
+FATE_SAMPLES_DEMUX += $(FATE_SAMPLES_S337M_DEMUX)
+fate-s337m-demux: $(FATE_SAMPLES_S337M_DEMUX)
+fate-s337m-demux-raw: CMD = framecrc -i $(TARGET_SAMPLES)/dolby_e/16-11 -c copy -ss 2 -t 1
+fate-s337m-demux-wav: CMD = framecrc -i $(TARGET_SAMPLES)/dolby_e/20-bit_5.1_2.0.wav -vn -c:a copy
+fate-s337m-demux-wav-miss1-3-5: CMD = framecrc -i $(TARGET_SAMPLES)/dolby_e/20-bit_5.1_2.0_miss1-3-5.wav -vn -c:a copy
+fate-s337m-demux-mxf: CMD = framecrc -i $(TARGET_SAMPLES)/dolby_e/24-bit_5.1_2.0.mxf -vn -c:a copy
+fate-s337m-demux-ts-20: CMD = framecrc -i $(TARGET_SAMPLES)/dolby_e/20-bit-s302m_20-bit_5.1_2.0_phase000750.ts -vn -c:a copy
+fate-s337m-demux-ts-24: CMD = framecrc -i $(TARGET_SAMPLES)/dolby_e/24-bit-s302m_20-bit_5.1_2.0_phase001021.ts -vn -c:a copy
 
 FATE_SAMPLES_DEMUX-$(call FRAMECRC, SIFF) += fate-siff-demux
 fate-siff-demux: CMD = framecrc -i $(TARGET_SAMPLES)/SIFF/INTRO_B.VB -c copy

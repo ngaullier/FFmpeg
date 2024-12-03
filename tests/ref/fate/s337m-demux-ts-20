@@ -1,0 +1,44 @@
+#tb 0: 1/90000
+#media_type 0: audio
+#codec_id 0: s337m_24
+#sample_rate 0: 48000
+#channel_layout_name 0: 7.1
+0,          0,          0,       67,      216, 0x00000000, S=1, MPEGTS Stream ID,        1, 0x00bd00bd
+0,         67,         67,     3600,    11520, 0x57af8534, S=1, MPEGTS Stream ID,        1, 0x00bd00bd
+0,       3600,       3600,     3600,    11520, 0x2b1f99ce, S=1, MPEGTS Stream ID,        1, 0x00bd00bd
+0,       7200,       7200,     3600,    11520, 0x3014d003, S=1, MPEGTS Stream ID,        1, 0x00bd00bd
+0,      10800,      10800,     3600,    11520, 0xe141c2a2, S=1, MPEGTS Stream ID,        1, 0x00bd00bd
+0,      14400,      14400,     3600,    11520, 0x8ab191d9, S=1, MPEGTS Stream ID,        1, 0x00bd00bd
+0,      18000,      18000,     3600,    11520, 0x7acd7b49, S=1, MPEGTS Stream ID,        1, 0x00bd00bd
+0,      21600,      21600,     3600,    11520, 0xed097ec0, S=1, MPEGTS Stream ID,        1, 0x00bd00bd
+0,      25200,      25200,     3600,    11520, 0x5c97ba4b, S=1, MPEGTS Stream ID,        1, 0x00bd00bd
+0,      28800,      28800,     3600,    11520, 0x19b7ad13, S=1, MPEGTS Stream ID,        1, 0x00bd00bd
+0,      32400,      32400,     3600,    11520, 0x58049d06, S=1, MPEGTS Stream ID,        1, 0x00bd00bd
+0,      36000,      36000,     3600,    11520, 0x7458b325, S=1, MPEGTS Stream ID,        1, 0x00bd00bd
+0,      39600,      39600,     3600,    11520, 0x9c42acd9, S=1, MPEGTS Stream ID,        1, 0x00bd00bd
+0,      43200,      43200,     3600,    11520, 0xe2d08c76, S=1, MPEGTS Stream ID,        1, 0x00bd00bd
+0,      46800,      46800,     3600,    11520, 0xe72aca35, S=1, MPEGTS Stream ID,        1, 0x00bd00bd
+0,      50400,      50400,     3600,    11520, 0x3932a007, S=1, MPEGTS Stream ID,        1, 0x00bd00bd
+0,      54000,      54000,     3600,    11520, 0x6ee2a57d, S=1, MPEGTS Stream ID,        1, 0x00bd00bd
+0,      57600,      57600,     3600,    11520, 0x80489d7e, S=1, MPEGTS Stream ID,        1, 0x00bd00bd
+0,      61200,      61200,     3600,    11520, 0x34d2bdd9, S=1, MPEGTS Stream ID,        1, 0x00bd00bd
+0,      64800,      64800,     3600,    11520, 0x313bcec0, S=1, MPEGTS Stream ID,        1, 0x00bd00bd
+0,      68400,      68400,     3600,    11520, 0x0b02bd7c, S=1, MPEGTS Stream ID,        1, 0x00bd00bd
+0,      72000,      72000,     3600,    11520, 0xe9587274, S=1, MPEGTS Stream ID,        1, 0x00bd00bd
+0,      75600,      75600,     3600,    11520, 0x8605b239, S=1, MPEGTS Stream ID,        1, 0x00bd00bd
+0,      79200,      79200,     3600,    11520, 0xa84f9642, S=1, MPEGTS Stream ID,        1, 0x00bd00bd
+0,      82800,      82800,     3600,    11520, 0x411e8c5b, S=1, MPEGTS Stream ID,        1, 0x00bd00bd
+0,      86400,      86400,     3600,    11520, 0x8964a9f0, S=1, MPEGTS Stream ID,        1, 0x00bd00bd
+0,      90000,      90000,     3600,    11520, 0xe15fdb64, S=1, MPEGTS Stream ID,        1, 0x00bd00bd
+0,      93600,      93600,     3600,    11520, 0x3be1d7b5, S=1, MPEGTS Stream ID,        1, 0x00bd00bd
+0,      97200,      97200,     3600,    11520, 0xb4b9755c, S=1, MPEGTS Stream ID,        1, 0x00bd00bd
+0,     100800,     100800,     3600,    11520, 0xa5c76717, S=1, MPEGTS Stream ID,        1, 0x00bd00bd
+0,     104400,     104400,     3600,    11520, 0x2936bedf, S=1, MPEGTS Stream ID,        1, 0x00bd00bd
+0,     108000,     108000,     3600,    11520, 0x379ece8b, S=1, MPEGTS Stream ID,        1, 0x00bd00bd
+0,     111600,     111600,     3600,    11520, 0x2122ca4d, S=1, MPEGTS Stream ID,        1, 0x00bd00bd
+0,     115200,     115200,     3600,    11520, 0xbd168af7, S=1, MPEGTS Stream ID,        1, 0x00bd00bd
+0,     118800,     118800,     3600,    11520, 0x1647aec9, S=1, MPEGTS Stream ID,        1, 0x00bd00bd
+0,     122400,     122400,     3600,    11520, 0xbf5a91b7, S=1, MPEGTS Stream ID,        1, 0x00bd00bd
+0,     126000,     126000,     3600,    11520, 0x93e26d79, S=1, MPEGTS Stream ID,        1, 0x00bd00bd
+0,     129600,     129600,     3600,    11520, 0x09cd76dd, S=1, MPEGTS Stream ID,        1, 0x00bd00bd
+0,     133200,     133200,     3600,    11304, 0x6e69abc4
