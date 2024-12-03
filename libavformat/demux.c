@@ -126,6 +126,8 @@ static int set_codec_from_probe_data(AVFormatContext *s, AVStream *st,
         { "truehd",     AV_CODEC_ID_TRUEHD,       AVMEDIA_TYPE_AUDIO    },
         { "evc",        AV_CODEC_ID_EVC,          AVMEDIA_TYPE_VIDEO    },
         { "vvc",        AV_CODEC_ID_VVC,          AVMEDIA_TYPE_VIDEO    },
+        { "s337m_16",   AV_CODEC_ID_S337M_16,     AVMEDIA_TYPE_AUDIO    },
+        { "s337m_24",   AV_CODEC_ID_S337M_24,     AVMEDIA_TYPE_AUDIO    },
         { 0 }
     };
     int score;

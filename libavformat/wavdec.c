@@ -176,7 +176,8 @@ static int wav_probe(const AVProbeData *p)
 
 static void handle_stream_probing(AVStream *st)
 {
-    if (st->codecpar->codec_id == AV_CODEC_ID_PCM_S16LE) {
+    if (st->codecpar->codec_id == AV_CODEC_ID_PCM_S16LE
+     || st->codecpar->codec_id == AV_CODEC_ID_PCM_S24LE) {
         FFStream *const sti = ffstream(st);
         sti->request_probe = AVPROBE_SCORE_EXTENSION + 1;
         sti->probe_packets = FFMIN(sti->probe_packets, 32);

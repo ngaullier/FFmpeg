@@ -639,7 +639,7 @@ static int mxf_get_d10_aes3_packet(AVIOContext *pb, AVStream *st, AVPacket *pkt,
     for (; end_ptr - buf_ptr >= st->codecpar->ch_layout.nb_channels * 4; ) {
         for (int i = 0; i < st->codecpar->ch_layout.nb_channels; i++) {
             uint32_t sample = bytestream_get_le32(&buf_ptr);
-            if (st->codecpar->bits_per_coded_sample == 24)
+            if (av_get_bits_per_sample(st->codecpar->codec_id) == 24)
                 bytestream_put_le24(&data_ptr, (sample >> 4) & 0xffffff);
             else
                 bytestream_put_le16(&data_ptr, (sample >> 12) & 0xffff);
@@ -3095,7 +3095,12 @@ static int mxf_parse_structural_metadata(MXFContext *mxf)
             } else if (st->codecpar->codec_id == AV_CODEC_ID_AAC) {
                 sti->need_parsing = AVSTREAM_PARSE_FULL;
             }
-            st->codecpar->bits_per_coded_sample = av_get_bits_per_sample(st->codecpar->codec_id);
+            if (st->codecpar->codec_id == AV_CODEC_ID_PCM_S16LE
+             || st->codecpar->codec_id == AV_CODEC_ID_PCM_S24LE) {
+                FFStream *const sti = ffstream(st);
+                sti->request_probe = AVPROBE_SCORE_EXTENSION;
+                sti->need_parsing  = AVSTREAM_PARSE_FULL;
+            }
 
             if (descriptor->channels <= 0 || descriptor->channels >= FF_SANE_NB_CHANNELS) {
                 av_log(mxf->fc, AV_LOG_ERROR, "Invalid number of channels %d, must be less than %d\n", descriptor->channels, FF_SANE_NB_CHANNELS);
