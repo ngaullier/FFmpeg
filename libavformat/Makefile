@@ -540,7 +540,7 @@ OBJS-$(CONFIG_RTSP_DEMUXER)              += rtsp.o rtspdec.o httpauth.o \
                                             urldecode.o
 OBJS-$(CONFIG_RTSP_MUXER)                += rtsp.o rtspenc.o httpauth.o \
                                             urldecode.o
-OBJS-$(CONFIG_S337M_DEMUXER)             += s337m.o spdif.o
+OBJS-$(CONFIG_S337M_DEMUXER)             += s337m.o
 OBJS-$(CONFIG_SAMI_DEMUXER)              += samidec.o subtitles.o
 OBJS-$(CONFIG_SAP_DEMUXER)               += sapdec.o
 OBJS-$(CONFIG_SAP_MUXER)                 += sapenc.o
@@ -572,8 +572,8 @@ OBJS-$(CONFIG_SMUSH_DEMUXER)             += smush.o
 OBJS-$(CONFIG_SOL_DEMUXER)               += sol.o pcm.o
 OBJS-$(CONFIG_SOX_DEMUXER)               += soxdec.o pcm.o
 OBJS-$(CONFIG_SOX_MUXER)                 += soxenc.o rawenc.o
-OBJS-$(CONFIG_SPDIF_DEMUXER)             += spdif.o spdifdec.o
-OBJS-$(CONFIG_SPDIF_MUXER)               += spdif.o spdifenc.o
+OBJS-$(CONFIG_SPDIF_DEMUXER)             += spdifdec.o
+OBJS-$(CONFIG_SPDIF_MUXER)               += spdifenc.o
 OBJS-$(CONFIG_SPEEX_MUXER)               += oggenc.o \
                                             vorbiscomment.o
 OBJS-$(CONFIG_SRT_DEMUXER)               += srtdec.o subtitles.o

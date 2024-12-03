@@ -19,6 +19,7 @@
  */
 
 #include "libavutil/intreadwrite.h"
+#include "libavcodec/spdif_s337m_parser_internal.h"
 #include "avformat.h"
 #include "demux.h"
 #include "internal.h"
@@ -171,7 +172,7 @@ static int s337m_read_packet(AVFormatContext *s, AVPacket *pkt)
         return ret < 0 ? ret : AVERROR_EOF;
 
     if (IS_16LE_MARKER(state))
-        ff_spdif_bswap_buf16((uint16_t *)pkt->data, (uint16_t *)pkt->data, pkt->size >> 1);
+        avpriv_spdif_s337m_bswap_buf16((uint16_t *)pkt->data, (uint16_t *)pkt->data, pkt->size >> 1);
     else
         bswap_buf24(pkt->data, pkt->size);
 

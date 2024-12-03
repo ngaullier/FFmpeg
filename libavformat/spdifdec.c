@@ -29,6 +29,7 @@
 
 #include "libavcodec/ac3defs.h"
 #include "libavcodec/adts_parser.h"
+#include "libavcodec/spdif_s337m_parser_internal.h"
 
 #include "avformat.h"
 #include "demux.h"
@@ -215,7 +216,7 @@ int ff_spdif_read_packet(AVFormatContext *s, AVPacket *pkt)
     if (avio_read(pb, pkt->data, pkt->size) < pkt->size) {
         return AVERROR_EOF;
     }
-    ff_spdif_bswap_buf16((uint16_t *)pkt->data, (uint16_t *)pkt->data, pkt->size >> 1);
+    avpriv_spdif_s337m_bswap_buf16((uint16_t *)pkt->data, (uint16_t *)pkt->data, pkt->size >> 1);
 
     ret = spdif_get_offset_and_codec(s, data_type, pkt->data,
                                      &offset, &codec_id);
