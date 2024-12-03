@@ -136,7 +136,7 @@ fate-qcp-demux: CMD = crc -i $(TARGET_SAMPLES)/qcp/0036580847.QCP -c:a copy
 FATE_SAMPLES_DEMUX-$(call FRAMECRC, R3D, JPEG2000 PCM_S32BE) += fate-redcode-demux
 fate-redcode-demux: CMD = framecrc -i $(TARGET_SAMPLES)/r3d/4MB-sample.r3d -c:v copy -c:a copy
 
-FATE_SAMPLES_DEMUX-$(call FRAMECRC, S337M,, DOLBY_E_PARSER) += fate-s337m-demux
+FATE_SAMPLES_DEMUX-$(call FRAMECRC, S337M_16,, S337M_16_PARSER FRAMECRC_MUXER) += fate-s337m-demux
 fate-s337m-demux: CMD = framecrc -i $(TARGET_SAMPLES)/dolby_e/16-11 -c copy -ss 2 -t 1
 
 FATE_SAMPLES_DEMUX-$(call FRAMECRC, SIFF) += fate-siff-demux
