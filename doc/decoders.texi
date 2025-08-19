@@ -292,6 +292,24 @@ Loud sounds are fully compressed.  Soft sounds are enhanced.
 
 @end table
 
+@anchor{dolby_e}
+@section dolby_e
+
+Dolby E audio decoder.
+
+This is a raw decoder without any further processing, which means the output
+sample rate is different from the 48KHz input sample rate.
+A dolby E stream is always carried in a s337m frame. The demuxing of s337m
+is implemented as a codec, which means dolby E is a nested codec at the end.
+The s337m wrapper-decoder is supported in s337m raw format (this is no standard!)
+or in compatible audio tracks (uncompressed, stereo, 48KHz, 16/20/24 bits)
+in wav, mpegts (s302m) and mxf demuxers.
+Other formats require two passes of processing: a first one to extract the s337m stream,
+and another to decode it.
+Dolby E is autodetected using ffmpeg stream probing mechanism.
+To disable stream probing, which in particular disable dolby E detection,
+@code{--probe_streams 0} must be specified (see demuxer options).
+
 @section flac
 
 FLAC audio decoder.

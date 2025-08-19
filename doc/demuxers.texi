@@ -1188,4 +1188,27 @@ this is set to 0, which means that a sensible value is chosen based on the
 input format.
 @end table
 
+@section wav, w64
+
+WAV/RF64/BW64/Wave64 demuxer.
+
+This demuxer supports spdif and s337m probing, as well as direct codec
+probing in some cases (dts).
+Concerning dolby E, see @ref{dolby_e,,the dolby E section in the ffmpeg-codecs manual,ffmpeg-codecs}.
+
+@subsection Options
+
+This demuxer supports the following options:
+
+@table @option
+
+@item ignore_length @var{bool}
+Ignore the length field of the 'data' chunk: read everything as data up to eof. Default is disabled.
+This option is not supported in the Wave64 demuxer.
+
+@item max_size
+Max size of a single packet. Default is 4096.
+
+@end table
+
 @c man end DEMUXERS
