@@ -32,6 +32,7 @@
 #include "libavutil/opt.h"
 #include "libavutil/avassert.h"
 #include "libavutil/dovi_meta.h"
+#include "libavutil/reverse.c"
 #include "libavcodec/bytestream.h"
 #include "libavcodec/defs.h"
 #include "libavcodec/get_bits.h"
@@ -1012,6 +1013,125 @@ static void new_data_packet(const uint8_t *buffer, int len, AVPacket *pkt)
     pkt->size = len;
 }
 
+#define AES3_HEADER_LEN 4
+static int s302m_parse_frame_header(void *avc, AVCodecParameters *par, const uint8_t *buf,
+                                    int buf_size)
+{
+    uint32_t h;
+    int frame_size, channels, bits;
+
+    if (buf_size <= AES3_HEADER_LEN) {
+        av_log(avc, AV_LOG_ERROR, "frame is too short\n");
+        return AVERROR_INVALIDDATA;
+    }
+
+    /*
+     * AES3 header :
+     * size:            16
+     * number channels   2
+     * channel_id        8
+     * bits per samples  2
+     * alignments        4
+     */
+
+    h = AV_RB32(buf);
+    frame_size =  (h >> 16) & 0xffff;
+    channels   = ((h >> 14) & 0x0003) * 2 +  2;
+    bits       = ((h >>  4) & 0x0003) * 4 + 16;
+
+    if (bits > 24) {
+        av_log(avc, AV_LOG_ERROR, "frame has invalid header\n");
+        return AVERROR_INVALIDDATA;
+    }
+
+    /* Output properties may have been overriden by stream probing after
+     * avformat_find_stream_info and must be preserved */
+    if (par->codec_id != AV_CODEC_ID_S302M
+        && par->codec_id != AV_CODEC_ID_PCM_S24LE
+        && par->codec_id != AV_CODEC_ID_PCM_S16LE)
+        goto end;
+
+    /* Set output properties */
+    par->bits_per_raw_sample = bits;
+    if (bits > 16)
+        par->codec_id = AV_CODEC_ID_PCM_S24LE;
+    else
+        par->codec_id = AV_CODEC_ID_PCM_S16LE;
+
+    av_channel_layout_uninit(&par->ch_layout);
+    switch(channels) {
+        case 2:
+            par->ch_layout = (AVChannelLayout)AV_CHANNEL_LAYOUT_STEREO;
+            break;
+        case 4:
+            par->ch_layout = (AVChannelLayout)AV_CHANNEL_LAYOUT_QUAD;
+            break;
+        case 6:
+            par->ch_layout = (AVChannelLayout)AV_CHANNEL_LAYOUT_5POINT1_BACK;
+            break;
+        case 8:
+            av_channel_layout_from_mask(&par->ch_layout,
+                                        AV_CH_LAYOUT_5POINT1_BACK | AV_CH_LAYOUT_STEREO_DOWNMIX);
+            break;
+        default:
+            par->ch_layout.order       = AV_CHANNEL_ORDER_UNSPEC;
+            par->ch_layout.nb_channels = channels;
+            break;
+    }
+
+    par->sample_rate = 48000;
+
+end:
+    return AES3_HEADER_LEN + frame_size;
+}
+
+static int s302m_demux(AVCodecParameters *par, AVPacket *pkt)
+{
+    int ret = av_packet_make_writable(pkt);
+    if (ret < 0)
+        return ret;
+    pkt->data += AES3_HEADER_LEN;
+    av_shrink_packet(pkt, pkt->size - AES3_HEADER_LEN);
+
+    if (par->bits_per_raw_sample == 24) {
+        uint8_t *buf = pkt->data;
+        uint8_t *buf_out = buf;
+        for (; buf + 6 < pkt->data + pkt->size; buf+=7, buf_out+=6)
+            AV_WL48(buf_out,
+                ((uint64_t)ff_reverse[buf[2]] << 16) |
+                ((uint64_t)ff_reverse[buf[1]] <<  8) |
+                ((uint64_t)ff_reverse[buf[0]])       |
+                ((uint64_t)ff_reverse[buf[6] & 0xf0] << 44) |
+                ((uint64_t)ff_reverse[buf[5]]        << 36) |
+                ((uint64_t)ff_reverse[buf[4]]        << 28) |
+                ((uint64_t)ff_reverse[buf[3] & 0x0f] << 20));
+        av_shrink_packet(pkt, buf_out - pkt->data);
+    }
+    else if (par->bits_per_raw_sample == 20) {
+        uint8_t *buf = pkt->data;
+        for (; buf + 5 < pkt->data + pkt->size; buf+=6)
+            AV_WL48(buf,
+                ((uint64_t)ff_reverse[buf[2] & 0xf0] << 20) |
+                ((uint64_t)ff_reverse[buf[1]]        << 12) |
+                ((uint64_t)ff_reverse[buf[0]]        << 4)  |
+                ((uint64_t)ff_reverse[buf[5] & 0xf0] << 44) |
+                ((uint64_t)ff_reverse[buf[4]]        << 36) |
+                ((uint64_t)ff_reverse[buf[3]]        << 28));
+    } else {
+        uint8_t *buf = pkt->data;
+        uint8_t *buf_out = buf;
+        for (; buf + 4 < pkt->data + pkt->size; buf+=5, buf_out+=4)
+            AV_WL32(buf_out,
+                ((uint32_t)ff_reverse[buf[1]]        << 8)  |
+                ((uint32_t)ff_reverse[buf[0]])              |
+                ((uint32_t)ff_reverse[buf[4] & 0xf0] << 28) |
+                ((uint32_t)ff_reverse[buf[3]]        << 20) |
+                ((uint32_t)ff_reverse[buf[2] & 0x0f] << 12));
+        av_shrink_packet(pkt, buf_out - pkt->data);
+    }
+    return 0;
+}
+
 static int new_pes_packet(PESContext *pes, AVPacket *pkt)
 {
     uint8_t *sd;
@@ -1035,6 +1155,20 @@ static int new_pes_packet(PESContext *pes, AVPacket *pkt)
         pkt->stream_index = pes->sub_st->index;
     else
         pkt->stream_index = pes->st->index;
+
+    if (pes->st->codecpar->codec_tag == MKTAG('B', 'S', 'S', 'D')) {
+        AVCodecParameters *par = pes->st->codecpar;
+        int expected_buf_size = s302m_parse_frame_header(pes->stream, par, pkt->data, pkt->size);
+
+        if (expected_buf_size != pkt->size)
+            pes->flags |= AV_PKT_FLAG_CORRUPT;
+        if (expected_buf_size > 0) {
+            int ret = s302m_demux(par, pkt);
+            if (ret < 0)
+                return ret;
+        }
+    }
+
     pkt->pts = pes->pts;
     pkt->dts = pes->dts;
     /* store position of first TS packet of this PES packet */
@@ -2027,8 +2161,10 @@ int ff_parse_mpeg2_descriptor(AVFormatContext *fc, AVStream *st, int stream_type
         av_log(fc, AV_LOG_TRACE, "reg_desc=%.4s\n", (char *)&st->codecpar->codec_tag);
         if (st->codecpar->codec_id == AV_CODEC_ID_NONE || sti->request_probe > 0) {
             mpegts_find_stream_type(st, st->codecpar->codec_tag, REGD_types);
-            if (st->codecpar->codec_tag == MKTAG('B', 'S', 'S', 'D'))
+            if (st->codecpar->codec_tag == MKTAG('B', 'S', 'S', 'D')) {
                 sti->request_probe = 50;
+                sti->need_parsing = AVSTREAM_PARSE_FULL;
+            }
         }
         break;
     case STREAM_IDENTIFIER_DESCRIPTOR:

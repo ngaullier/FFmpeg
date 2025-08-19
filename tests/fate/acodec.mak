@@ -159,7 +159,8 @@ fate-acodec-roqaudio: CODEC = roq_dpcm
 fate-acodec-roqaudio: ENCOPTS = -af aresample=22050:tsf=s16p
 fate-acodec-roqaudio: DECOPTS = -af aresample=44100:tsf=s16p
 
-FATE_ACODEC_S302M-$(call ENCDEC, S302M, MPEGTS, ARESAMPLE_FILTER) += 16bit 20bit 24bit
+FATE_ACODEC_S302M-$(call ENCDEC, S302M PCM_S16LE, MPEGTS, ARESAMPLE_FILTER) += 16bit
+FATE_ACODEC_S302M-$(call ENCDEC, S302M PCM_S24LE, MPEGTS, ARESAMPLE_FILTER) += 20bit 24bit
 FATE_ACODEC_S302M := $(addprefix fate-acodec-s302m-, $(FATE_ACODEC_S302M-yes))
 FATE_ACODEC += $(FATE_ACODEC_S302M)
 fate-acodec-s302m: $(FATE_ACODEC_S302M)
