@@ -139,6 +139,8 @@ endif
 
 include $(SRC_PATH)/$(APITESTSDIR)/Makefile
 
+include $(SRC_PATH)/tests/fate/cji.mak
+
 include $(SRC_PATH)/tests/fate/acodec.mak
 include $(SRC_PATH)/tests/fate/vcodec.mak
 
