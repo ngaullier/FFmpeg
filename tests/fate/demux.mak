@@ -172,7 +172,7 @@ FATE_SAMPLES_DEMUX-$(call CRC, XWMA) += fate-xwma-demux
 fate-xwma-demux: CMD = crc -i $(TARGET_SAMPLES)/xwma/ergon.xwma -c:a copy
 
 FATE_FFPROBE_DEMUX-$(call PARSERDEMDEC, MPEGVIDEO, MPEGTS, MPEG2VIDEO AC3, EXTRACT_EXTRADATA_BSF) += fate-ts-demux
-fate-ts-demux: CMD = ffprobe_demux $(TARGET_SAMPLES)/ac3/mp3ac325-4864-small.ts
+fate-ts-demux: CMD = ffprobe_demux $(TARGET_SAMPLES)/ac3/mp3ac325-4864-small.ts -analyze_frames -read_intervals %+1
 
 FATE_FFPROBE_DEMUX-$(CONFIG_MPEGTS_DEMUXER) += fate-ts-timed-id3-demux
 fate-ts-timed-id3-demux: CMD = ffprobe_demux $(TARGET_SAMPLES)/mpegts/id3.ts
