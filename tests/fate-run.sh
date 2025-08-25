@@ -127,6 +127,10 @@ probe(){
     run ffprobe${PROGSUF}${EXECSUF} -bitexact "$@"
 }
 
+cjiprobe(){
+    run ffprobe${PROGSUF}${EXECSUF} -bitexact -analyze_frames -read_intervals %+1 -of flat "$@"
+}
+
 probegaplessinfo(){
     filename="$1"
     shift
