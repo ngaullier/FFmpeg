@@ -95,9 +95,6 @@ typedef struct AC3DecodeContext {
     AVChannelLayout downmix_layout;
     SHORTFLOAT *downmix_coeffs[2];              ///< stereo downmix coefficients
 
-// Start of flushable fields.
-// frame_type must be the flushable field, or the offset changed in ac3_decode_flush().
-
 ///@name Bit stream information
 ///@{
     int frame_type;                         ///< frame type                             (strmtyp)
@@ -128,6 +125,9 @@ typedef struct AC3DecodeContext {
     int dolby_surround_ex_mode;             ///< dolby surround ex mode                 (dsurexmod)
     int dolby_headphone_mode;               ///< dolby headphone mode                   (dheadphonmod)
 ///@}
+
+// Start of flushable fields.
+// preferred_stereo_downmix must be the flushable field, or the offset changed in ac3_decode_flush().
 
     int preferred_stereo_downmix;
     float ltrt_center_mix_level;
