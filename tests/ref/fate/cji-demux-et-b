@@ -1,0 +1,87 @@
+#extradata 0:       49, 0x426d0e64
+#tb 0: 1/90000
+#media_type 0: video
+#codec_id 0: h264
+#dimensions 0: 1920x1080
+#sar 0: 1/1
+0,      18000,      18000,     3600,   224653, 0xf790df29, S=1, MPEGTS Stream ID,        1, 0x00e000e0
+0,      21600,      21600,     3600,    82840, 0x05c0e553, F=0x0, S=1, MPEGTS Stream ID,        1, 0x00e000e0
+0,      25200,      25200,     3600,    69776, 0xfbaf9361, F=0x0, S=1, MPEGTS Stream ID,        1, 0x00e000e0
+0,      28800,      28800,     3600,    51205, 0xa948ee91, F=0x0, S=1, MPEGTS Stream ID,        1, 0x00e000e0
+0,      32400,      32400,     3600,    47927, 0x34782cb9, F=0x0, S=1, MPEGTS Stream ID,        1, 0x00e000e0
+0,      36000,      36000,     3600,    47630, 0x59f5b0e7, F=0x0, S=1, MPEGTS Stream ID,        1, 0x00e000e0
+0,      39600,      39600,     3600,   157483, 0x55f602a0, S=1, MPEGTS Stream ID,        1, 0x00e000e0
+0,      43200,      43200,     3600,    50324, 0x4a6d0c05, F=0x0, S=1, MPEGTS Stream ID,        1, 0x00e000e0
+0,      46800,      46800,     3600,    49534, 0xe1de5c45, F=0x0, S=1, MPEGTS Stream ID,        1, 0x00e000e0
+0,      50400,      50400,     3600,    37271, 0x13b47bd0, F=0x0, S=1, MPEGTS Stream ID,        1, 0x00e000e0
+0,      54000,      54000,     3600,    41262, 0x899864c4, F=0x0, S=1, MPEGTS Stream ID,        1, 0x00e000e0
+0,      57600,      57600,     3600,    42615, 0xbdcd549b, F=0x0, S=1, MPEGTS Stream ID,        1, 0x00e000e0
+0,      61200,      61200,     3600,   193707, 0x0b8028dd, S=1, MPEGTS Stream ID,        1, 0x00e000e0
+0,      64800,      64800,     3600,    73887, 0x84045181, F=0x0, S=1, MPEGTS Stream ID,        1, 0x00e000e0
+0,      68400,      68400,     3600,    69346, 0x7c2d738c, F=0x0, S=1, MPEGTS Stream ID,        1, 0x00e000e0
+0,      72000,      72000,     3600,    53967, 0x8d2068d4, F=0x0, S=1, MPEGTS Stream ID,        1, 0x00e000e0
+0,      75600,      75600,     3600,    52184, 0x55fc7165, F=0x0, S=1, MPEGTS Stream ID,        1, 0x00e000e0
+0,      79200,      79200,     3600,    55233, 0xbab9b633, F=0x0, S=1, MPEGTS Stream ID,        1, 0x00e000e0
+0,      82800,      82800,     3600,   215968, 0xe1b84780, S=1, MPEGTS Stream ID,        1, 0x00e000e0
+0,      86400,      86400,     3600,    69746, 0x4888a491, F=0x0, S=1, MPEGTS Stream ID,        1, 0x00e000e0
+0,      90000,      90000,     3600,    67326, 0x82c23b37, F=0x0, S=1, MPEGTS Stream ID,        1, 0x00e000e0
+0,      93600,      93600,     3600,    65444, 0x685fd29e, F=0x0, S=1, MPEGTS Stream ID,        1, 0x00e000e0
+0,      97200,      97200,     3600,    64409, 0xad22636b, F=0x0, S=1, MPEGTS Stream ID,        1, 0x00e000e0
+0,     100800,     100800,     3600,    64004, 0xcd2ddde5, F=0x0, S=1, MPEGTS Stream ID,        1, 0x00e000e0
+0,     104400,     104400,     3600,   223766, 0xc781d69d, S=1, MPEGTS Stream ID,        1, 0x00e000e0
+0,     108000,     108000,     3600,      653, 0x00ac7db9, S=1, MPEGTS Stream ID,        1, 0x00e000e0
+0,     111600,     111600,     3600,       79, 0xe85504d1, F=0x0, S=1, MPEGTS Stream ID,        1, 0x00e000e0
+0,     115200,     115200,     3600,       84, 0x5aa90b5d, F=0x0, S=1, MPEGTS Stream ID,        1, 0x00e000e0
+0,     118800,     118800,     3600,       89, 0x52300d55, F=0x0, S=1, MPEGTS Stream ID,        1, 0x00e000e0
+0,     122400,     122400,     3600,      100, 0x167a10a6, F=0x0, S=1, MPEGTS Stream ID,        1, 0x00e000e0
+0,     126000,     126000,     3600,       84, 0xc8ba09a2, F=0x0, S=1, MPEGTS Stream ID,        1, 0x00e000e0
+0,     129600,     129600,     3600,      887, 0xbb5fe865, S=1, MPEGTS Stream ID,        1, 0x00e000e0
+0,     133200,     133200,     3600,       80, 0x7c2a07b6, F=0x0
+0,     136800,     136800,     3600,    61276, 0x649a2c35, F=0x0, S=1, MPEGTS Stream ID,        1, 0x00e000e0
+0,     140400,     140400,     3600,    75000, 0xca3297c5, F=0x0, S=1, MPEGTS Stream ID,        1, 0x00e000e0
+0,     144000,     144000,     3600,    75000, 0x5c0296ff, F=0x0, S=1, MPEGTS Stream ID,        1, 0x00e000e0
+0,     147600,     147600,     3600,    75000, 0x38f5973d, F=0x0, S=1, MPEGTS Stream ID,        1, 0x00e000e0
+0,     151200,     151200,     3600,    75000, 0x1aab0320, S=1, MPEGTS Stream ID,        1, 0x00e000e0
+0,     154800,     154800,     3600,    75000, 0x944296ae, F=0x0, S=1, MPEGTS Stream ID,        1, 0x00e000e0
+0,     158400,     158400,     3600,    75000, 0x86cc9700, F=0x0, S=1, MPEGTS Stream ID,        1, 0x00e000e0
+0,     162000,     162000,     3600,    75000, 0xd45496f5, F=0x0, S=1, MPEGTS Stream ID,        1, 0x00e000e0
+0,     165600,     165600,     3600,    75000, 0x06909719, F=0x0, S=1, MPEGTS Stream ID,        1, 0x00e000e0
+0,     169200,     169200,     3600,    75000, 0x8e679723, F=0x0, S=1, MPEGTS Stream ID,        1, 0x00e000e0
+0,     172800,     172800,     3600,    75000, 0x29d3fd52, S=1, MPEGTS Stream ID,        1, 0x00e000e0
+0,     176400,     176400,     3600,    75000, 0xe97c9694, F=0x0, S=1, MPEGTS Stream ID,        1, 0x00e000e0
+0,     180000,     180000,     3600,    75000, 0x7cff96d0, F=0x0, S=1, MPEGTS Stream ID,        1, 0x00e000e0
+0,     183600,     183600,     3600,    75000, 0xf90c96f6, F=0x0, S=1, MPEGTS Stream ID,        1, 0x00e000e0
+0,     187200,     187200,     3600,    75000, 0x105c9749, F=0x0, S=1, MPEGTS Stream ID,        1, 0x00e000e0
+0,     190800,     190800,     3600,    75000, 0x392d973d, F=0x0, S=1, MPEGTS Stream ID,        1, 0x00e000e0
+0,     194400,     194400,     3600,    75000, 0xd0480092, S=1, MPEGTS Stream ID,        1, 0x00e000e0
+0,     198000,     198000,     3600,   211407, 0xde983ae0, S=1, MPEGTS Stream ID,        1, 0x00e000e0
+0,     201600,     201600,     3600,    69290, 0xc8a9e317, F=0x0, S=1, MPEGTS Stream ID,        1, 0x00e000e0
+0,     205200,     205200,     3600,    99279, 0xfcb19ad4, F=0x0, S=1, MPEGTS Stream ID,        1, 0x00e000e0
+0,     208800,     208800,     3600,    75874, 0xdb80caa3, F=0x0, S=1, MPEGTS Stream ID,        1, 0x00e000e0
+0,     212400,     212400,     3600,    83606, 0x93fe91b2, F=0x0, S=1, MPEGTS Stream ID,        1, 0x00e000e0
+0,     216000,     216000,     3600,    63450, 0x097f6cc6, F=0x0, S=1, MPEGTS Stream ID,        1, 0x00e000e0
+0,     219600,     219600,     3600,   173432, 0xe9b1db20, S=1, MPEGTS Stream ID,        1, 0x00e000e0
+0,     223200,     223200,     3600,    80282, 0xf9fff200, F=0x0, S=1, MPEGTS Stream ID,        1, 0x00e000e0
+0,     226800,     226800,     3600,    77564, 0x1702ecaf, F=0x0, S=1, MPEGTS Stream ID,        1, 0x00e000e0
+0,     230400,     230400,     3600,    76396, 0x28c8d70b, F=0x0, S=1, MPEGTS Stream ID,        1, 0x00e000e0
+0,     234000,     234000,     3600,    65763, 0xaf7921b8, F=0x0, S=1, MPEGTS Stream ID,        1, 0x00e000e0
+0,     237600,     237600,     3600,   173828, 0x549c0d47, S=1, MPEGTS Stream ID,        1, 0x00e000e0
+0,     241200,     241200,     3600,    78338, 0xcdaeac23, F=0x0, S=1, MPEGTS Stream ID,        1, 0x00e000e0
+0,     244800,     244800,     3600,    79185, 0xd8ca3ee8, F=0x0, S=1, MPEGTS Stream ID,        1, 0x00e000e0
+0,     248400,     248400,     3600,    85437, 0x8ce04ea7, F=0x0, S=1, MPEGTS Stream ID,        1, 0x00e000e0
+0,     252000,     252000,     3600,    67726, 0xdb0fb2b1, F=0x0, S=1, MPEGTS Stream ID,        1, 0x00e000e0
+0,     255600,     255600,     3600,    68898, 0x1ff1d1b0, F=0x0, S=1, MPEGTS Stream ID,        1, 0x00e000e0
+0,     259200,     259200,     3600,   157560, 0x4642c6f1, S=1, MPEGTS Stream ID,        1, 0x00e000e0
+0,     262800,     262800,     3600,    60974, 0xbd3b6b84, F=0x0, S=1, MPEGTS Stream ID,        1, 0x00e000e0
+0,     266400,     266400,     3600,    79590, 0x2aa33542, F=0x0, S=1, MPEGTS Stream ID,        1, 0x00e000e0
+0,     270000,     270000,     3600,    57156, 0x787fcc14, F=0x0, S=1, MPEGTS Stream ID,        1, 0x00e000e0
+0,     273600,     273600,     3600,    58048, 0x5aa82649, F=0x0, S=1, MPEGTS Stream ID,        1, 0x00e000e0
+0,     277200,     277200,     3600,    57050, 0xb40ab5a7, F=0x0, S=1, MPEGTS Stream ID,        1, 0x00e000e0
+0,     280800,     280800,     3600,   140976, 0x088e9eb8, S=1, MPEGTS Stream ID,        1, 0x00e000e0
+0,     284400,     284400,     3600,    88431, 0xb9dfb845, F=0x0, S=1, MPEGTS Stream ID,        1, 0x00e000e0
+0,     288000,     288000,     3600,    14361, 0x7290011e, F=0x0, S=1, MPEGTS Stream ID,        1, 0x00e000e0
+0,     291600,     291600,     3600,    48760, 0xa8dbc91a, F=0x0, S=1, MPEGTS Stream ID,        1, 0x00e000e0
+0,     295200,     295200,     3600,    40877, 0xd55e8324, F=0x0, S=1, MPEGTS Stream ID,        1, 0x00e000e0
+0,     298800,     298800,     3600,   146875, 0x9ace8650, S=1, MPEGTS Stream ID,        1, 0x00e000e0
+0,     302400,     302400,     3600,    51339, 0xfb2e2d6d, F=0x2, S=1, MPEGTS Stream ID,        1, 0x00e000e0
+0,     306000,     306000,     3600,    24910, 0xe43e8b7c, F=0x0

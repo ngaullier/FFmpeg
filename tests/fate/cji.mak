@@ -20,6 +20,12 @@ fate-cji-probe-wav-dts-1: CMD = $(PROBE_WAV_DTS_COMMAND) -probe_streams 1
 fate-cji-probe-ts-nopatpmt-0: CMD = $(PROBE_TS_NOPATPMT) -probe_streams 0
 fate-cji-probe-ts-nopatpmt-1: CMD = $(PROBE_TS_NOPATPMT) -probe_streams 1
 
+FATE_SAMPLES_CJIFFMPEG-$(call FRAMECRC, MPEGTS) += $(addprefix fate-cji-demux-, et-a et-b)
+fate-cji-demux-et-a: CMD = framecrc -i $(TARGET_SAMPLES)/cji/FirstNALsplited2packets_a.ts -map v -c copy
+fate-cji-demux-et-b: CMD = framecrc -i $(TARGET_SAMPLES)/cji/FirstNALsplited2packets_b.ts -map v -c copy
+
 FATE_SAMPLES_CJIPROBE += $(FATE_SAMPLES_CJIPROBE-yes)
 FATE_SAMPLES_FFPROBE += $(FATE_SAMPLES_CJIPROBE)
-fate-cji: $(FATE_SAMPLES_CJIPROBE)
+FATE_SAMPLES_CJIFFMPEG += $(FATE_SAMPLES_CJIFFMPEG-yes)
+FATE_SAMPLES_FFMPEG += $(FATE_SAMPLES_CJIFFMPEG)
+fate-cji: $(FATE_SAMPLES_CJIPROBE) $(FATE_SAMPLES_FFMPEG)
