@@ -25,6 +25,12 @@ fate-cji-probe-duration-50i_mp2: CMD = cjiprobe $(TARGET_SAMPLES)/cji/probe_dura
 fate-cji-probe-duration-440_01: CMD = cjiprobe $(TARGET_SAMPLES)/cji/probe_durations/440_01.ts -show_entries stream=duration
 fate-cji-probe-duration-991_01: CMD = cjiprobe $(TARGET_SAMPLES)/cji/concat/991_01.ts -show_entries stream=duration
 
+FATE_SAMPLES_CJIFFMPEG-$(call FRAMECRC, MPEGTS) += $(addprefix fate-cji-demux-, et-a et-b)
+fate-cji-demux-et-a: CMD = framecrc -i $(TARGET_SAMPLES)/cji/FirstNALsplited2packets_a.ts -map v -c copy
+fate-cji-demux-et-b: CMD = framecrc -i $(TARGET_SAMPLES)/cji/FirstNALsplited2packets_b.ts -map v -c copy
+
 FATE_SAMPLES_CJIPROBE += $(FATE_SAMPLES_CJIPROBE-yes)
 FATE_SAMPLES_FFPROBE += $(FATE_SAMPLES_CJIPROBE)
-fate-cji: $(FATE_SAMPLES_CJIPROBE)
+FATE_SAMPLES_CJIFFMPEG += $(FATE_SAMPLES_CJIFFMPEG-yes)
+FATE_SAMPLES_FFMPEG += $(FATE_SAMPLES_CJIFFMPEG)
+fate-cji: $(FATE_SAMPLES_CJIPROBE) $(FATE_SAMPLES_FFMPEG)
