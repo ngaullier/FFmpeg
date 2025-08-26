@@ -20,6 +20,11 @@ fate-cji-probe-wav-dts-1: CMD = $(PROBE_WAV_DTS_COMMAND) -probe_streams 1
 fate-cji-probe-ts-nopatpmt-0: CMD = $(PROBE_TS_NOPATPMT) -probe_streams 0
 fate-cji-probe-ts-nopatpmt-1: CMD = $(PROBE_TS_NOPATPMT) -probe_streams 1
 
+FATE_SAMPLES_CJIPROBE-$(call DEMDEC, MPEGTS) += $(addprefix fate-cji-probe-duration-, 50i_mp2 440_01 991_01)
+fate-cji-probe-duration-50i_mp2: CMD = cjiprobe $(TARGET_SAMPLES)/cji/probe_durations/50i_mp2.ts -show_entries stream=duration
+fate-cji-probe-duration-440_01: CMD = cjiprobe $(TARGET_SAMPLES)/cji/probe_durations/440_01.ts -show_entries stream=duration
+fate-cji-probe-duration-991_01: CMD = cjiprobe $(TARGET_SAMPLES)/cji/concat/991_01.ts -show_entries stream=duration
+
 FATE_SAMPLES_CJIPROBE += $(FATE_SAMPLES_CJIPROBE-yes)
 FATE_SAMPLES_FFPROBE += $(FATE_SAMPLES_CJIPROBE)
 fate-cji: $(FATE_SAMPLES_CJIPROBE)
