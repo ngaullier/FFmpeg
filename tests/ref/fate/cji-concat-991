@@ -1,0 +1,233 @@
+[ftyp] @0-20
+File type : isom version 512
+Compatible with : isom iso2 avc1 mp41
+[free] @20-28
+[mdat] @28-20A19C3B : 547462163 bytes
+[moov] @20A19C3B-20A59775
+  [mvhd] @20A19C43-20A19CAF
+    duration : 360.048s [timescale=1000]
+    created : 0001/01/01 00:00:00
+    modified : 0001/01/01 00:00:00
+  [trak] @20A19CAF-20A396EE
+    [tkhd] @20A19CB7-20A19D13
+      duration : 360.024s
+      resolution : 1920x1080
+      flags : 3 [ON]
+      created : 0001/01/01 00:00:00
+      modified : 0001/01/01 00:00:00
+      track_id : 1
+      layer : 0
+      alternategroup : 0
+      volume : 0
+    [udta] @20A59714-20A59775
+      [meta] @20A5971C-20A59775
+    [mdia] @20A19D37-20A396EE
+      [mdhd] @20A19D3F-20A19D5F
+        duration : 360.024s [timescale=90000]
+        created : 0001/01/01 00:00:00
+      [hdlr] @20A19D5F-20A19D8C
+        class/type : /vide
+      [minf] @20A19D8C-20A396EE
+        [dinf] @20A19DA8-20A19DCC
+          [dref] @20A19DB0-20A19DCC
+            ref[1] : self-contained
+        [stbl] @20A19DCC-20A396EE
+          [stco] @20A30A3E-20A396EE
+            NbChunks = 9000
+            data @000001A4  @0001E326  @0003780D  @0004636B  @00055813  @0006ADF3  @0007A4AB  @000854D2  @00094759  @0009E000  @000A8A92  @000B6983  @000C044C  @000D5AA5  @000DF41C  @000E7B8F  @000EFCD1  @000FC068  @0010ADF0  @00119B54 
+          [stsd] @20A19DD4-20A19EBA
+            dref=1
+            dataformat : avc1
+            resolution : 1920x1080
+            depth : 24
+            colortableid : -1
+              [avcC] @20A19E3A-20A19E83
+                100@40 (constraints=00)
+                NALUnitLength=4
+                SPS: 67640028AC2CAC0780227E5C052808080A00000300020000030065C4C0002DC6C00016E36FE31C1DA1831380
+                PPS: 68CA8D414000
+
+@Annex B NALU w/ long startcode, len 44, forbidden_bit 0, nal_reference_idc 3, nal_unit_type 7
+
+SPS: profile_idc                                          01100100 (100)
+SPS: constrained_set0_flag                                       0 (  0)
+SPS: constrained_set1_flag                                       0 (  0)
+SPS: constrained_set2_flag                                       0 (  0)
+SPS: constrained_set3_flag                                       0 (  0)
+SPS: constrained_set4_flag                                       0 (  0)
+SPS: constrained_set5_flag                                       0 (  0)
+SPS: reserved_zero_2bits                                        00 (  0)
+SPS: level_idc                                            00101000 ( 40)
+SPS: seq_parameter_set_id                                        1 (  0)
+SPS: chroma_format_idc                                         010 (  1)
+SPS: bit_depth_luma_minus8                                       1 (  0)
+SPS: bit_depth_chroma_minus8                                     1 (  0)
+SPS: lossless_qpprime_y_zero_flag                                0 (  0)
+SPS: seq_scaling_matrix_present_flag                             0 (  0)
+SPS: log2_max_frame_num_minus4                               00101 (  4)
+SPS: pic_order_cnt_type                                          1 (  0)
+SPS: log2_max_pic_order_cnt_lsb_minus4                       00101 (  4)
+SPS: num_ref_frames                                            011 (  2)
+SPS: gaps_in_frame_num_value_allowed_flag                        0 (  0)
+SPS: pic_width_in_mbs_minus1                         0000001111000 (119)
+SPS: pic_height_in_map_units_minus1                  0000001000100 ( 67)
+SPS: frame_mbs_only_flag                                         1 (  1)
+SPS: direct_8x8_inference_flag                                   1 (  1)
+SPS: frame_cropping_flag                                         1 (  1)
+SPS: frame_crop_left_offset                                      1 (  0)
+SPS: frame_crop_right_offset                                     1 (  0)
+SPS: frame_crop_top_offset                                       1 (  0)
+SPS: frame_crop_bottom_offset                                00101 (  4)
+SPS: vui_parameters_present_flag                                 1 (  1)
+VUI: aspect_ratio_info_present_flag                              1 (  1)
+VUI: aspect_ratio_idc                                     00000001 (  1)
+VUI: overscan_info_present_flag                                  0 (  0)
+VUI: video_signal_type_present_flag                              1 (  1)
+VUI: video_format                                              001 (  1)
+VUI: video_full_range_flag                                       0 (  0)
+VUI: color_description_present_flag                              1 (  1)
+VUI: colour_primaries                                     00000001 (  1)
+VUI: transfer_characteristics                             00000001 (  1)
+VUI: matrix_coefficients                                  00000001 (  1)
+VUI: chroma_loc_info_present_flag                                0 (  0)
+VUI: timing_info_present_flag                                    1 (  1)
+VUI: num_units_in_tick                            00000000000000000000000000000001 (  1)
+VUI: time_scale                                   00000000000000000000000000110010 ( 50)
+VUI: fixed_frame_rate_flag                                       1 (  1)
+VUI: nal_hrd_parameters_present_flag                             1 (  1)
+VUI: cpb_cnt_minus1                                              1 (  0)
+VUI: bit_rate_scale                                           0001 (  1)
+VUI: cpb_size_scale                                           0011 (  3)
+VUI: bit_rate_value_minus1                        000000000000000010110111000110110 (93749)
+VUI: cpb_size_value_minus1                        000000000000000010110111000110110 (93749)
+VUI: cbr_flag                                                    1 (  1)
+VUI: initial_cpb_removal_delay_length_minus1                 11111 ( 31)
+VUI: cpb_removal_delay_length_minus1                         10001 ( 17)
+VUI: dpb_output_delay_length_minus1                          10001 ( 17)
+VUI: time_offset_length                                      11000 ( 24)
+VUI: vcl_hrd_parameters_present_flag                             0 (  0)
+VUI: low_delay_hrd_flag                                          0 (  0)
+VUI: pic_struct_present_flag                                     1 (  1)
+VUI: bitstream_restriction_flag                                  1 (  1)
+VUI: motion_vectors_over_pic_boundaries_flag                     1 (  1)
+VUI: max_bytes_per_pic_denom                                   011 (  2)
+VUI: max_bits_per_mb_denom                                     010 (  1)
+VUI: log2_max_mv_length_horizontal                         0001100 ( 11)
+VUI: log2_max_mv_length_vertical                           0001100 ( 11)
+VUI: num_reorder_frames                                        010 (  1)
+VUI: max_dec_frame_buffering                                   011 (  2)
+
+
+Last NALU in File
+
+Annex B NALU w/ long startcode, len 5, forbidden_bit 0, nal_reference_idc 3, nal_unit_type 8
+
+PPS: pic_parameter_set_id                                        1 (  0)
+PPS: seq_parameter_set_id                                        1 (  0)
+PPS: entropy_coding_mode_flag                                    0 (  0)
+PPS: bottom_field_pic_order_in_frame_present_flag                0 (  0)
+PPS: num_slice_groups_minus1                                     1 (  0)
+PPS: num_ref_idx_l0_default_active_minus1                      010 (  1)
+PPS: num_ref_idx_l1_default_active_minus1                        1 (  0)
+PPS: weighted_pred_flag                                          0 (  0)
+PPS: weighted_bipred_idc                                        00 (  0)
+PPS: pic_init_qp_minus26                                         1 (  0)
+PPS: pic_init_qs_minus26                                         1 (  0)
+PPS: chroma_qp_index_offset                                    010 (  1)
+PPS: deblocking_filter_control_present_flag                      1 (  1)
+PPS: constrained_intra_pred_flag                                 0 (  0)
+PPS: redundant_pic_cnt_present_flag                              0 (  0)
+PPS: transform_8x8_mode_flag                                     0 (  0)
+PPS: pic_scaling_matrix_present_flag                             0 (  0)
+PPS: second_chroma_qp_index_offset                             010 (  1)
+              [pasp] @20A19E96-20A19EA6
+                par : 1/1
+              [colr] @20A19E83-20A19E96
+                colorimetry : bt709/bt709/bt709 range=TV
+          [stts] @20A19EBA-20A19EE2
+            2999 samples @25samples/s = 119.96s
+            1 samples @15.625samples/s = 0.064s
+            6000 samples @25samples/s = 240s
+          [stsc] @20A27D6E-20A27D8A
+            ChunkNr:NbSamples 1:1 (1)
+            9000 samples
+          [stsz] @20A27D8A-20A30A3E
+            9000 samples, size=variable : 122782 102699 59422 61853 86787 62412 44363 61342 38715 42871 56352 38917 86920 38569 33942 32345 49709 60000 60000 60000
+          [stss] @20A19EE2-20A1AAFE
+              keyframes 1 13 21 33 45 57 69 81 93 105 117 129 141 153 165 177 182 194 206 218             
+          [ctts] @20A1AAFE-20A27D6E
+              ptsdelay 1:0.04 1:0.12 2:0 1:0.12 2:0 1:0.12 2:0 1:0.08 1:0 1:0.04 1:0.12 2:0 1:0.12 2:0 2:0.04 1:0.12 2:0 1:0.12 2:0 1:0.12 
+              firstpts=0.04
+              pts 0.04 0.16 0.08 0.12 0.28 0.2 0.24 0.4 0.32 0.36 0.48000000000000004 0.44 0.52 0.64 0.56 0.6 0.76 0.68 0.72 0.8 0.8400000000000001 0.96 0.88 0.92 1.08 1 1.04 1.2000000000000002 
+    [edts] @20A19D13-20A19D37
+      [elst] @20A19D1B-20A19D37
+        duration=360.024s precharge=0 rate=x1
+  [trak] @20A396EE-20A59714
+    [tkhd] @20A396F6-20A39752
+      duration : 360.048s
+      resolution : 0x0
+      flags : 3 [ON]
+      created : 0001/01/01 00:00:00
+      modified : 0001/01/01 00:00:00
+      track_id : 2
+      layer : 0
+      alternategroup : 1
+      volume : 1
+    [udta] @20A59714-20A59775
+      [meta] @20A5971C-20A59775
+    [mdia] @20A39776-20A59714
+      [mdhd] @20A3977E-20A3979E
+        duration : 360.09066666666666s [timescale=48000]
+        created : 0001/01/01 00:00:00
+      [hdlr] @20A3979E-20A397CB
+        class/type : /soun
+      [minf] @20A397CB-20A59714
+        [dinf] @20A397E3-20A39807
+          [dref] @20A397EB-20A39807
+            ref[1] : self-contained
+        [stbl] @20A39807-20A59714
+          [stco] @20A50A2A-20A596DE
+            NbChunks = 9001
+            data @00000030  @0001E142  @00037451  @0004602B  @00055508  @0006AB16  @0007A1BF  @000851F6  @00094470  @0009DE94  @000A8777  @000B66B2  @000C0188  @000D57D4  @000DF14E  @000E78B2  @000EF9E8  @000FBEFE  @0010AAC8  @00119850 
+          [stsd] @20A3980F-20A3988A
+            dref=1
+            audio (mp4a) : 2x 16 bits 48000 Hz [COMPRESSED]
+              [esds] @20A39843-20A39876
+                ES_Descriptor: id=2, flags=0 [len=34]
+                decConfigDesc: codec=64, streamtype=5, upstream=0 [len=20]
+                  buffersize=0, maxBitrate=139644, avgBitrate=139644
+                decConfigSpecificInfo: 11 90
+                  codec=2, freq=48000, channelconfig=2
+          [stts] @20A3988A-20A398AA
+            16879 samples @46.875samples/s = 360.0853333333333s
+            1 samples @187.5samples/s = 0.005333333333333333s
+          [stsc] @20A398AA-20A40256
+            ChunkNr:NbSamples 1:1 (1) 3:2 (1) 10:1 (1) 11:2 (1) 18:1 (1) 19:2 (1) 26:1 (1) 27:2 (1) 34:1 (1) 35:2 (1) 42:1 (1) 43:2 (1) 50:1 (1) 51:2 (1) 58:1 (1) 59:2 (1) 66:1 (1) 67:2 (1) 74:1 (1) 75:2 (1)
+            16880 samples
+          [stsz] @20A40256-20A50A2A
+            16880 samples, size=variable : 372 484 517 439 430 402 393 386 375 358 367 381 365 367 362 383 364 396 399 359
+    [edts] @20A39752-20A39776
+      [elst] @20A3975A-20A39776
+        duration=360.048s precharge=0.042666666666666665 rate=x1
+  [udta] @20A59714-20A59775
+    [meta] @20A5971C-20A59775
+Track VIDEO[0] : checking chunks...
+Track AUDIO[1] : checking chunks...
+
+Duration analysis :
+  Movie : 360.048
+  VIDEO : mat=360.024 mdhd=360.024 tkhd=360.024 elst=360.024
+  AUDIO : mat=360.048 mdhd=360.09066666666666 tkhd=360.048 elst=360.048
+2 warning(s)
+Track VIDEO[0] : multiple segments
+NOTICE : Audio/Video essences not in sync
+
+isom : H264 [avc1.640028 HP@40-420p-SAR1x1] : 1920x1080, 00:06:00:01 @25fps, 0001/01/01 00:00:00
+aac lc [mp4a.40.2] : 2x 16 bits 48000Hz [COMPRESSED]
+Generic Tags :
+  movie : meta 
+  video : meta 
+  audio(1) : meta 
+Data (padding=0%) :
+  VIDEO[0] : duration=360.024s
+  AUDIO[1] : duration=360.09066666666666s-0.042666666666666665s=360.048s

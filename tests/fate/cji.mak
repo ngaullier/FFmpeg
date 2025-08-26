@@ -29,6 +29,9 @@ FATE_SAMPLES_CJIFFMPEG-$(call FRAMECRC, MPEGTS) += $(addprefix fate-cji-demux-, 
 fate-cji-demux-et-a: CMD = framecrc -i $(TARGET_SAMPLES)/cji/FirstNALsplited2packets_a.ts -map v -c copy
 fate-cji-demux-et-b: CMD = framecrc -i $(TARGET_SAMPLES)/cji/FirstNALsplited2packets_b.ts -map v -c copy
 
+FATE_SAMPLES_CJIFFMPEG-$(call FRAMECRC, MPEGTS) += $(addprefix fate-cji-concat-, 991)
+fate-cji-concat-991: CMD = cjiconcat $(TARGET_SAMPLES)/cji/concat/991.ffconcat
+
 FATE_SAMPLES_CJIPROBE += $(FATE_SAMPLES_CJIPROBE-yes)
 FATE_SAMPLES_FFPROBE += $(FATE_SAMPLES_CJIPROBE)
 FATE_SAMPLES_CJIFFMPEG += $(FATE_SAMPLES_CJIFFMPEG-yes)

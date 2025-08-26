@@ -131,6 +131,15 @@ cjiprobe(){
     run ffprobe${PROGSUF}${EXECSUF} -bitexact -analyze_frames -read_intervals %+1 -of flat "$@"
 }
 
+cjiconcat(){
+    filename="$1"
+    shift
+    encfile="${outdir}/${test}.mp4"
+    run ffmpeg${PROGSUF}${EXECSUF} -y -bitexact -segment_time_metadata 1 -i "$filename" \
+        -c:v copy -af aselect=concatdec_select,aresample=min_comp=0.001:min_hard_comp=0 -c:a libfdk_aac "$encfile" "$@"
+    cjimov "$encfile" fullverbose 2>&1
+}
+
 probegaplessinfo(){
     filename="$1"
     shift
