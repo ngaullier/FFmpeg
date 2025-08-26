@@ -1814,7 +1814,7 @@ static void estimate_timings_from_bit_rate(AVFormatContext *ic)
                "Estimating duration from bitrate, this may be inaccurate\n");
 }
 
-#define DURATION_DEFAULT_MAX_READ_SIZE 250000LL
+#define DURATION_DEFAULT_MAX_READ_SIZE 10000000LL
 #define DURATION_DEFAULT_MAX_RETRY 6
 #define DURATION_MAX_RETRY 1
 
